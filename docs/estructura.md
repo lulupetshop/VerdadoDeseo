@@ -21,7 +21,7 @@ Fondo: la mesa 3D low-poly a la luz de las velas, con el mazo en el centro.
 
 - Título: **Verdad *o* deseo**
 - Bajada: Cartas de preguntas y retos para jugar en pareja, en tres niveles: suave, intenso y explícito.
-- Datos: *A definir: cantidad de cartas* · Para 2 · PDF o mazo físico
+- Datos: 60 cartas · Para 2 · PDF o mazo físico
 - Bloque de oferta:
   - Contador: **La oferta termina en 14:59**
   - Precio: ~~$37.500~~ **$18.750** · 50 % off
@@ -34,7 +34,7 @@ Fondo: la mesa 3D low-poly a la luz de las velas, con el mazo en el centro.
 
 - Título: **Qué trae el juego**
 - Lista:
-  - *A definir: N* cartas de verdad y deseo, en tres niveles.
+  - 60 cartas de verdad y deseo, en tres niveles.
   - Reglas para empezar en dos minutos.
   - PDF listo para imprimir en casa.
   - Llega a tu mail apenas se acredita el pago.
@@ -64,10 +64,13 @@ Dos cajas (al pasar el mouse se rellenan de bordó y suben un poco):
   - Precio con el contador: ~~$37.500~~ **$18.750**. Después del contador: $37.500.
   - "Llega a tu mail apenas pagás. Lo imprimís en casa."
   - Botón: **Comprar el PDF**
-- **Mazo físico**
-  - Precio: *A definir.*
+- **Mazo físico · Próximamente**
+  - "Reservá tu mazo físico. Solo 50 unidades con 33 % off para los primeros 50 que lo reserven."
+  - Precio: ~~$72.990~~ **$48.900** (a confirmar el redondeo).
   - "Cartas impresas, listas para jugar. Envío gratis."
-  - Botón: **Comprar el mazo** (mientras no haya precio: "Próximamente", sin botón de compra).
+  - Contador de unidades real, tomado del stock de Shopify: "Quedan N de 50".
+  - Botón: **Reservar mi mazo**. Al llegar a 0 unidades: "Agotado".
+  - *A definir:* fecha estimada de envío (va en la caja y en la descripción del producto).
 
 ## 7. Ventana de complementos (al tocar Comprar)
 
@@ -92,8 +95,7 @@ Se abre antes de ir al pago.
 
 - **¿Cómo lo recibo?** Por mail, apenas se acredita el pago, en la dirección que pongas al comprar. Si no te llega, revisá spam o escribinos.
 - **¿Lo puedo imprimir?** Sí. Es un PDF pensado para imprimir y recortar en casa.
-- **¿Cuánto tarda el mazo físico?** *A definir: demora y zonas.* El envío es gratis.
-- **¿Qué figura en el resumen de la tarjeta?** *A definir.*
+- **¿Cuándo llega el mazo físico?** Es una reserva: *A definir: fecha estimada de envío y zonas.* El envío es gratis.
 - **¿Es para mayores de 18?** Sí. Tiene contenido sexual explícito en el nivel 3.
 - **¿Y si una carta no nos gusta?** Se pasa y se saca otra. Nadie hace nada que no quiera.
 - **¿Cómo los contacto?** Por mail a digitalesworldd@gmail.com o por Instagram en @Verdad.deseo.
@@ -107,7 +109,5 @@ Se abre antes de ir al pago.
 
 ## Pendientes para construir
 
-- Cantidad de cartas del juego.
-- Precio, demora y zonas del mazo físico.
-- Qué figura en el resumen de la tarjeta.
-- Exportar el tema de la tienda para conectarlo al repo.
+- Mazo físico: confirmar $48.900, fecha estimada de envío y zonas.
+- Conectar el tema del repo en Shopify (después del merge a `main`).
