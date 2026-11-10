@@ -8,13 +8,13 @@ Estado: **en armado**. Lo marcado como *A definir* se resuelve antes de publicar
 |---|---|
 | Nombre | **Verdad o Deseo** — "Un juego para dos" |
 | Qué es | Juego de preguntas (verdad) y retos (deseo) para parejas, en 3 niveles: suave, intenso y explícito |
-| Formato | Digital: versión celular (la mesa 3D interactiva) + PDF para imprimir |
+| Formato | **PDF** (llega por mail, acceso inmediato) y **mazo físico** (envío gratis). No hay versión celular: la mesa 3D de la página es solo una muestra para probar cartas. |
 | Portada | `portadas/verdad-o-deseo.webp` (texto: "Preguntas y desafíos para parejas · Edición completa · +18") |
-| Precio de lista | $37.500 |
-| Oferta | 50 % off → **$18.750** |
+| Precio PDF | Lista $37.500 · oferta 50 % off → **$18.750** |
+| Precio mazo físico | *A definir (en deducción).* Envío gratis. |
 | Cantidad de cartas | La página dice 60. *A definir: confirmar el número final.* |
-| Entrega | *A definir: cómo llega el PDF y cómo se habilita la versión celular después de pagar.* |
-| Versión impresa / combo | *A definir: ¿se vende ahora? La página todavía muestra "Impresa" y "Combo" sin precio.* |
+| Entrega PDF | Por mail, automática apenas se acredita el pago. *A definir: app de entrega digital en Shopify.* |
+| Entrega físico | Envío gratis. *A definir: zonas, demora, stock.* |
 
 ## 2. Subproductos
 
@@ -29,24 +29,23 @@ Mismo estilo de portada: negro y bordó, marco dorado, "VERDAD O DESEO" arriba y
 
 Totales con descuento: principal $18.750 + los 4 subproductos $28.360 = **$47.110** (de lista: $97.770).
 
-*A definir:*
-- Cómo se ofrecen: agregados opcionales en la landing, complementos en el carrito o un pack con todo.
-- Formato de cada uno (¿PDF?) y archivo final.
+Cómo se ofrecen: al tocar "Comprar" en el producto principal se abre una ventana con los 4 subproductos. Cada uno se puede sumar o no, y recién después se pasa al pago. El carrito se arma con el principal más los elegidos, en un solo link de checkout.
+
+*A definir:* formato de cada uno (¿PDF?) y archivo final.
 
 ## 3. Oferta y urgencia
 
-- Pedido: timer de 10 minutos para el 50 % off.
-- Regla: la urgencia tiene que ser verdadera. Si el reloj dice que el precio sube, el checkout tiene que cobrar el precio de lista cuando termina. Un timer de 10 minutos que vuelve a empezar al recargar la página no cumple esa regla, y Shopify no puede cobrar un precio distinto a cada visitante según su reloj.
-- *A definir: cuál de estas opciones usamos:*
-  1. **Fecha real de fin de la promo.** El contador marca, por ejemplo, "termina el domingo 23:59" y ese día se vuelve al precio de lista en Shopify. Recomendada.
-  2. **10 minutos reales con código.** El 50 % se aplica con un código que la página manda al checkout y que vence a los 10 minutos. Necesita una app o un descuento por cliente: es más complejo.
-  3. **Sin contador.** El 50 % se muestra como precio de lanzamiento.
-- El precio tachado ($37.500 y los demás) tiene que ser un precio que se haya cobrado de verdad (rige la normativa de defensa del consumidor sobre precios "antes / ahora").
+- Pedido del dueño: contador de 15 minutos que se reinicia al llegar a cero, con la promo siempre activa.
+- **Pendiente de resolver:** un contador que vuelve a empezar y una promo que no termina muestran un vencimiento que no existe. La guía de landings no lo permite y choca con la normativa de defensa del consumidor sobre publicidad engañosa y con las políticas de Meta Ads. Alternativas que generan urgencia y son verdaderas:
+  1. Contador hasta una fecha real de fin de la promo; ese día se vuelve al precio de lista.
+  2. Promo por tandas reales: termina el domingo 23:59, se vuelve al precio de lista y se relanza más adelante con otra fecha.
+  3. Sin contador: "Precio de lanzamiento" con el tachado real.
+- El precio tachado ($37.500 y los demás) tiene que ser un precio que se haya cobrado de verdad.
 
 ## 4. Público
 
 - Parejas adultas (+18) que quieren salir de la rutina, hablar de lo que no se animan y probar cosas nuevas.
-- Restricción: +18. Hay verificación de edad en la página y nada explícito en imágenes. La censura con asteriscos va en las cartas de muestra.
+- Restricción: +18. Hay verificación de edad en la página y nada explícito en imágenes. Las cartas de muestra van censuradas con asteriscos (dos primeras letras y la última).
 
 ## 5. Identidad
 
