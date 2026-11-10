@@ -17,16 +17,24 @@ El PDF principal no lleva precio tachado: el 50 % off ($18.750) lo aplica el có
 
 ## Link de pago
 
-`https://verdadodeseo.myshopify.com/cart/51562139255001:1,<subproductos elegidos>:1?discount=<CÓDIGO>`
+`https://verdadodeseo.myshopify.com/cart/51562139255001:1,<subproductos elegidos>:1?discount=NOCHE50`
 
-- Con el contador corriendo: con `?discount=<CÓDIGO>`.
+- Con el contador corriendo: con `?discount=NOCHE50`.
 - Con el contador en cero: sin el código.
+
+## Código de descuento
+
+- `NOCHE50`: 50 % solo sobre "Verdad o Deseo · PDF" ($37.500 → $18.750). Activo desde el 10/11/2026, sin vencimiento, para todos los clientes.
+
+## Hecho
+
+- [x] Portadas cargadas en los 5 productos.
+- [x] Los 7 productos de Disney Color pasados a borrador.
 
 ## Pendiente
 
-- [ ] Código de descuento del 50 %, solo para el PDF principal.
-- [ ] Portadas de cada producto.
 - [ ] Archivos PDF y entrega por mail (los carga el dueño).
 - [ ] Mazo físico: precio, envío gratis.
-- [ ] Nombre de la tienda: hoy dice "Disney Color".
-- [ ] Los 7 productos de Disney Color siguen activos.
+- [ ] Nombre de la tienda (lo cambia el dueño).
+- [ ] Pasar los 5 productos a activo y publicarlos en la tienda online antes del lanzamiento.
+- [ ] Probar el checkout con el link real: con código ($18.750) y sin código ($37.500).
