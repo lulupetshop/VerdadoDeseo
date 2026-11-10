@@ -35,12 +35,18 @@ Cómo se ofrecen: al tocar "Comprar" en el producto principal se abre una ventan
 
 ## 3. Oferta y urgencia
 
-- Pedido del dueño: contador de 15 minutos que se reinicia al llegar a cero, con la promo siempre activa.
-- **Pendiente de resolver:** un contador que vuelve a empezar y una promo que no termina muestran un vencimiento que no existe. La guía de landings no lo permite y choca con la normativa de defensa del consumidor sobre publicidad engañosa y con las políticas de Meta Ads. Alternativas que generan urgencia y son verdaderas:
-  1. Contador hasta una fecha real de fin de la promo; ese día se vuelve al precio de lista.
-  2. Promo por tandas reales: termina el domingo 23:59, se vuelve al precio de lista y se relanza más adelante con otra fecha.
-  3. Sin contador: "Precio de lanzamiento" con el tachado real.
+**Contador de 15 minutos por visitante. Al llegar a cero vuelve el precio normal, en la página y en el checkout.**
+
+Cómo funciona:
+- En Shopify el PDF queda a su precio de lista: **$37.500**.
+- El 50 % off se aplica con un **código de descuento** (ej. `NOCHE50`) que vale **solo para el PDF de Verdad o Deseo**. Así no se suma a los subproductos, que ya tienen su propio precio rebajado.
+- Al entrar, cada visitante recibe 15 minutos. El vencimiento queda guardado en su navegador: recargar la página no lo reinicia.
+- Mientras el contador corre, la página muestra $18.750 y el botón lleva al checkout con el código aplicado.
+- Cuando llega a cero, la página muestra $37.500 y el botón lleva al checkout sin el código.
+- Limitación conocida: quien borre los datos del navegador o entre desde otro dispositivo recibe 15 minutos nuevos. Quien conozca el código lo puede escribir a mano en el checkout.
 - El precio tachado ($37.500 y los demás) tiene que ser un precio que se haya cobrado de verdad.
+
+*A definir:* si los subproductos también vuelven a su precio de lista cuando termina el contador o mantienen siempre el precio rebajado.
 
 ## 4. Público
 
@@ -64,7 +70,7 @@ Cómo se ofrecen: al tocar "Comprar" en el producto principal se abre una ventan
 
 | | |
 |---|---|
-| Tienda Shopify | *A definir.* El conector está apuntando hoy a **Alma de hilo** (almadehilo.myshopify.com), que es otra marca. |
+| Tienda Shopify | `verdadodeseo.myshopify.com`. *A definir:* cambiar el nombre (hoy dice "Disney Color") y qué hacer con los 7 productos de otro proyecto que tiene cargados. |
 | Repo GitHub | `lulupetshop/VerdadoDeseo` |
 | Tema | *A definir: exportar el tema de la tienda de Verdad o Deseo para conectarlo a este repo.* |
 | Meta Ads | *A definir.* Producto +18: textos sugerentes sí, explícitos no; segmentación 18+. |
