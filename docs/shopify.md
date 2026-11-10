@@ -2,7 +2,7 @@
 
 Tienda: `verdadodeseo.myshopify.com` (ARS).
 
-## Productos (todos en borrador hasta el lanzamiento)
+## Productos (activos y publicados en la tienda online desde el 10/11/2026)
 
 | Producto | Product ID | Variant ID | Precio | Tachado | SKU |
 |---|---|---|---:|---:|---|
@@ -48,6 +48,6 @@ El PDF principal no lleva precio tachado: el 50 % off ($18.750) lo aplica el có
 - [x] Mazo físico creado: $48.990 (tachado $72.990), stock 50, envío desde el 10/12.
 - [x] Envío: "Envío gratis" a $0 en Argentina; envío internacional desactivado (10/11/2026).
 - [ ] Publicar el tema `VerdadoDeseo/main` (lo hace el dueño).
-- [ ] Nombre de la tienda (lo cambia el dueño).
-- [ ] Pasar los 5 productos a activo y publicarlos en la tienda online antes del lanzamiento.
+- [x] Nombre de la tienda: "Verdad o Deseo".
+- [x] Los 6 productos activos y publicados en la tienda online.
 - [ ] Probar el checkout con el link real: con código ($18.750) y sin código ($37.500).
