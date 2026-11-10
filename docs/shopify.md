@@ -2,7 +2,7 @@
 
 Tienda: `verdadodeseo.myshopify.com` (ARS).
 
-## Productos (todos en borrador hasta el lanzamiento)
+## Productos (activos y publicados en la tienda online desde el 10/11/2026)
 
 | Producto | Product ID | Variant ID | Precio | Tachado | SKU |
 |---|---|---|---:|---:|---|
@@ -11,7 +11,7 @@ Tienda: `verdadodeseo.myshopify.com` (ARS).
 | Esta Noche Se Juega | 10405294112985 | 51562139549913 | $7.990 | $17.300 | VOD-ESTA-NOCHE |
 | Sin Filtro | 10405294178521 | 51562140270809 | $5.390 | $11.990 | VOD-SIN-FILTRO |
 | Me Debés Una | 10405294211289 | 51562140303577 | $2.990 | $5.990 | VOD-ME-DEBES-UNA |
-| Verdad o Deseo · Mazo físico | — | — | *a definir* | — | — |
+| Verdad o Deseo · Mazo físico (reserva) | 10405529747673 | 51565634191577 | $48.990 | $72.990 | VOD-MAZO |
 
 El PDF principal no lleva precio tachado: el 50 % off ($18.750) lo aplica el código del contador.
 
@@ -21,6 +21,17 @@ El PDF principal no lleva precio tachado: el 50 % off ($18.750) lo aplica el có
 
 - Con el contador corriendo: con `?discount=NOCHE50`.
 - Con el contador en cero: sin el código.
+
+## Mazo físico
+
+- Reserva: se envía a partir del 10/12/2026.
+- Stock: 50 unidades, con seguimiento. Al llegar a 0, Shopify deja de vender (política DENY).
+- Precio: $48.990, con $72.990 tachado (33 % off).
+
+## Tema
+
+- Publicado: Horizon (`163385180377`).
+- Conectado a GitHub: `VerdadoDeseo/main` (`168789770457`), sin publicar. Idéntico al publicado en los 8 archivos clave (verificado por checksum el 10/11/2026). El tema publicado tiene además un `AGENTS.md`, que es solo documentación.
 
 ## Código de descuento
 
@@ -34,7 +45,9 @@ El PDF principal no lleva precio tachado: el 50 % off ($18.750) lo aplica el có
 ## Pendiente
 
 - [ ] Archivos PDF y entrega por mail (los carga el dueño).
-- [ ] Mazo físico: precio, envío gratis.
-- [ ] Nombre de la tienda (lo cambia el dueño).
-- [ ] Pasar los 5 productos a activo y publicarlos en la tienda online antes del lanzamiento.
+- [x] Mazo físico creado: $48.990 (tachado $72.990), stock 50, envío desde el 10/12.
+- [x] Envío: "Envío gratis" a $0 en Argentina; envío internacional desactivado (10/11/2026).
+- [ ] Publicar el tema `VerdadoDeseo/main` (lo hace el dueño).
+- [x] Nombre de la tienda: "Verdad o Deseo".
+- [x] Los 6 productos activos y publicados en la tienda online.
 - [ ] Probar el checkout con el link real: con código ($18.750) y sin código ($37.500).
