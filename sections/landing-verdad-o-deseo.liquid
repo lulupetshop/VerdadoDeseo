@@ -1,0 +1,1250 @@
+{%- comment -%}
+  Landing de Verdad o Deseo: mesa 3D con mazo interactivo, oferta con contador de 15 minutos por visitante,
+  ventana de complementos antes de pagar y secciones de venta. Precios, IDs y código: bloque CONFIG del último script.
+{%- endcomment -%}
+<style>
+/* Portada low-poly: la mesa a la luz de las velas, todo lo demás en penumbra.
+   La viñeta del final de la escena se funde con el negro de las secciones de abajo. */
+:root {
+  --bg: #070405;
+  --bg-2: #120a0c;
+  --fg: #f3e9e2;
+  --muted: #a8968e;
+  --wine: #8c1c3a;
+  --wine-glow: #b0283f;
+  --gold: #e3b465;
+  --line: rgba(227, 180, 101, .22);
+  --cream: #f6eadb;
+  --ink: #23140d;
+  --display: "Cormorant Garamond", "Times New Roman", serif;
+  --body: "Manrope", system-ui, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { color-scheme: dark; } }
+:root[data-theme="light"] { color-scheme: dark; }
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--fg); font: 400 16px/1.6 var(--body); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+body.playing { overflow: hidden; }
+
+/* ---------- Escena ---------- */
+.hero { position: relative; height: 100vh; height: 100svh; min-height: 520px; overflow: hidden;
+  background: radial-gradient(60% 55% at 50% 42%, #2a1426 0%, #12080d 55%, var(--bg) 100%); }
+canvas#gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
+.vignette { position: absolute; inset: 0; pointer-events: none; transition: opacity .6s ease;
+  background:
+    radial-gradient(70% 62% at 50% 44%, rgba(7,4,5,0) 38%, rgba(7,4,5,.55) 72%, rgba(7,4,5,.95) 100%),
+    linear-gradient(to bottom, rgba(7,4,5,0) 62%, var(--bg) 100%); }
+.veil { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
+.veil.on { pointer-events: auto; }
+
+/* La carta se dibuja en 3D; este bloque queda solo para lectores de pantalla */
+.card { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Interfaz sobre la escena */
+.ui { position: absolute; z-index: 5; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); pointer-events: none; }
+.ui > * { pointer-events: auto; }
+.ui.top { top: 0; padding-top: max(16px, env(safe-area-inset-top)); }
+.ui.bottom { bottom: 0; padding-bottom: 28px; flex-direction: column; }
+/* Barra superior: fija; al bajar se cierra en una píldora flotante que es el botón de compra */
+.bar { position: fixed; z-index: 40; top: 0; left: 50%; transform: translateX(-50%); width: 100%;
+  display: flex; justify-content: space-between; align-items: center; border-radius: 0; background-color: rgba(122, 22, 48, 0);
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
+  transition: width .6s cubic-bezier(.2,.7,.2,1), top .6s cubic-bezier(.2,.7,.2,1), padding .6s cubic-bezier(.2,.7,.2,1),
+    border-radius .6s ease, background-color .4s ease, box-shadow .4s ease, opacity .4s ease; }
+.bar .brand, .bar .links a:not(.btn) { display: inline-block; max-width: 260px; white-space: nowrap; overflow: hidden;
+  transition: opacity .25s ease, max-width .5s ease; }
+.bar .links { transition: gap .5s ease; }
+.bar .btn--sm { transition: background-color .4s ease, border-color .4s ease, padding .5s ease; }
+.bar.pill { top: max(14px, env(safe-area-inset-top)); width: 184px; padding: 0; border-radius: 999px; background-color: var(--wine);
+  box-shadow: 0 14px 34px rgba(0,0,0,.55), inset 0 0 0 1px var(--wine-glow); justify-content: center; }
+.bar.pill .brand, .bar.pill .links a:not(.btn) { opacity: 0; max-width: 0; pointer-events: none; }
+.bar.pill .links { gap: 0; width: 100%; }
+.bar.pill .btn--sm { width: 100%; background-color: transparent; border-color: transparent; padding: 16px 0; font-size: 13px; text-align: center; }
+.bar.pill:hover { background-color: var(--wine-glow); }
+.playing .bar { opacity: 0; pointer-events: none; }
+section.block { scroll-margin-top: 70px; }
+@media (prefers-reduced-motion: reduce) { .bar, .bar * { transition: none !important; } }
+.brand { font: 600 22px/1 var(--display); color: var(--fg); text-decoration: none; }
+.brand em, .intro h1 em { color: var(--wine-glow); }
+.links { display: flex; gap: 24px; align-items: center; font-size: 14px; }
+.links a:not(.btn) { color: var(--muted); text-decoration: none; }
+.links a:not(.btn):hover { color: var(--fg); }
+.btn--sm { padding: 11px 18px; font-size: 12px; }
+.intro { position: absolute; z-index: 5; left: 0; right: 0; top: max(76px, calc(env(safe-area-inset-top) + 60px)); text-align: center; padding: 0 16px; pointer-events: none; transition: opacity .4s; }
+.intro h1 { font: 600 clamp(40px, 5.2vw, 66px)/1 var(--display); margin: 0 0 12px; }
+.intro .lead { color: var(--fg); opacity: .86; margin: 0 auto 8px; max-width: 48ch; font-size: 16px; }
+.intro .facts { color: var(--gold); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 800; margin: 0; }
+.hint { font-size: 13px; color: var(--muted); margin: 0 0 10px; }
+.hint span { color: var(--fg); margin-left: 6px; }
+.cta { display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+.cta .link { color: var(--fg); font-size: 14px; text-underline-offset: 4px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.chip { font: 600 12px/1 var(--body); color: var(--muted); background: rgba(7,4,5,.5); border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; cursor: pointer; }
+.chip[aria-pressed="true"] { color: var(--fg); border-color: var(--gold); }
+.btn { font: 800 13px/1 var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--fg);
+  background: var(--wine); border: 1px solid var(--wine-glow); padding: 15px 30px; border-radius: 999px; cursor: pointer; text-decoration: none; display: inline-block; }
+.btn:hover, .btn:focus-visible { background: var(--wine-glow); outline: none; }
+.btn--ghost { background: transparent; border-color: var(--gold); }
+.btn--ghost:hover, .btn--ghost:focus-visible { background: var(--gold); color: #140a0b; }
+.stash { position: fixed; z-index: 30; left: 50%; transform: translateX(-50%); opacity: 0; pointer-events: none; transition: opacity .3s; }
+.stash.on { opacity: 1; pointer-events: auto; }
+.playing .vignette { opacity: 0; }
+.playing .hint, .playing .chips, .playing .cta, .playing .intro, .playing .links { opacity: 0; pointer-events: none; }
+.hint, .chips, .cta, .links { transition: opacity .4s; }
+@media (max-width: 640px) {
+  .bar .links a:not(.btn) { display: none; }
+  .intro { top: max(68px, calc(env(safe-area-inset-top) + 56px)); }
+  .intro .lead { font-size: 14px; }
+  .intro .facts { font-size: 10px; }
+  .ui.bottom { padding-bottom: 20px; }
+}
+@media (max-height: 700px) and (min-width: 641px) { .intro .lead { display: none; } }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.sr:focus { position: absolute; z-index: 40; left: 50%; top: 50%; width: auto; height: auto; clip: auto; transform: translate(-50%,-50%); }
+.scroll { position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%); width: 1px; height: 18px; background: linear-gradient(var(--gold), transparent); opacity: .6; }
+
+/* ---------- Secciones ---------- */
+.wrap { max-width: 1040px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+section.block { padding-block: 72px; }
+section.block + section.block { border-top: 1px solid var(--line); }
+.block h2 { font: 600 clamp(36px, 5vw, 56px)/1 var(--display); margin: 0 0 32px; }
+.rules { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+.rules h3 { font: 800 12px/1 var(--body); letter-spacing: .2em; text-transform: uppercase; color: var(--gold); margin: 0 0 18px; }
+.rules ol { margin: 0; padding-left: 1.2em; }
+.rules li { margin-bottom: 12px; }
+.rules li::marker { color: var(--gold); font-weight: 800; }
+.levels { margin: 0; }
+.levels div { padding: 14px 0; border-bottom: 1px solid var(--line); }
+.levels div:first-child { padding-top: 0; }
+.levels dt { font: 600 24px/1.2 var(--display); }
+.levels dd { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
+.shop { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.product { border: 1px solid var(--line); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 12px; background: var(--bg-2);
+  transition: transform .25s ease, background-color .25s ease, border-color .25s ease; }
+.product .tag, .product p, .price, .product .btn { transition: color .25s ease, background-color .25s ease, border-color .25s ease; }
+.product:hover, .product:focus-within { transform: translateY(-6px); background: var(--wine); border-color: var(--wine); }
+.product:hover .tag, .product:hover p, .product:focus-within .tag, .product:focus-within p { color: rgba(243,233,226,.85); }
+.product:hover .price, .product:focus-within .price { color: var(--fg); }
+.product:hover .btn, .product:focus-within .btn { background: var(--fg); color: var(--wine); border-color: var(--fg); }
+@media (prefers-reduced-motion: reduce) { .product:hover, .product:focus-within { transform: none; } }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+.product .tag { font: 800 11px/1 var(--body); letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+.product h3 { font: 600 30px/1.05 var(--display); margin: 0; }
+.product p { margin: 0; color: var(--muted); font-size: 15px; flex: 1; }
+.product .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+.price { font: 600 28px/1 var(--display); color: var(--gold); font-variant-numeric: tabular-nums; }
+.product .btn { padding: 12px 18px; font-size: 12px; }
+.product--featured { border-color: var(--wine-glow); }
+footer { border-top: 1px solid var(--line); padding-block: 28px 40px; font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+@media (max-width: 760px) { .rules, .shop { grid-template-columns: 1fr; } .rules { gap: 40px; } }
+
+.gate { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: var(--bg); padding: 24px; text-align: center; }
+.gate[hidden] { display: none; }
+.gate h2 { font: 600 34px/1.1 var(--display); margin: 0 0 12px; }
+.gate p { color: var(--muted); margin: 0 0 26px; }
+.gate .row { display: flex; gap: 16px; justify-content: center; align-items: center; }
+.gate a { color: var(--fg); }
+.nogl { position: absolute; inset: 0; display: none; place-items: center; text-align: center; padding: 24px; color: var(--muted); }
+.nogl.on { display: grid; }
+
+/* ---------- Oferta en la portada ---------- */
+.offer { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 14px; transition: opacity .4s; }
+.offer-line { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; justify-content: center; font-size: 14px; color: var(--muted); }
+.timer { display: inline-flex; align-items: center; gap: 8px; color: var(--fg); }
+.timer::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--wine-glow); box-shadow: 0 0 0 0 rgba(176,40,63,.6); animation: pulse 1.6s infinite; }
+.timer strong { font: 800 15px/1 var(--body); color: var(--gold); font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+.expired .timer::before { display: none; }
+@keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(176,40,63,0); } 100% { box-shadow: 0 0 0 0 rgba(176,40,63,0); } }
+.was { text-decoration: line-through; color: var(--muted); }
+.now { font: 600 26px/1 var(--display); color: var(--fg); font-variant-numeric: tabular-nums; }
+.off { font: 800 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: #140a0b; background: var(--gold); padding: 5px 8px; border-radius: 999px; }
+.expired .was, .expired .off { display: none; }
+.offer .cta { margin-top: 2px; }
+.playing .offer { opacity: 0; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .timer::before { animation: none; } }
+
+/* ---------- Secciones nuevas ---------- */
+.eyebrow-line { color: var(--muted); max-width: 56ch; margin: -18px 0 36px; }
+.trae { display: grid; grid-template-columns: 260px 1fr; gap: 48px; align-items: center; }
+.trae img { width: 100%; height: auto; border-radius: 10px; box-shadow: 0 30px 60px rgba(0,0,0,.6); display: block; }
+.trae ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
+.trae li { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; font-size: 17px; }
+.trae li b { font: italic 600 30px/1 var(--display); color: var(--gold); }
+.trae li span { padding-top: 4px; }
+
+.niveles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.nivel h3 { font: 600 26px/1.1 var(--display); margin: 0 0 6px; }
+.nivel p { margin: 0 0 18px; color: var(--muted); font-size: 15px; }
+.muestra { aspect-ratio: 63/88; border-radius: 12px; background: var(--cream); color: var(--ink); padding: 22px 20px;
+  box-shadow: inset 0 0 0 6px var(--cream), inset 0 0 0 8px var(--wine), 0 24px 50px rgba(0,0,0,.55);
+  display: flex; flex-direction: column; justify-content: space-between; }
+.muestra.n3 { background: #f7dfe0; box-shadow: inset 0 0 0 6px #f7dfe0, inset 0 0 0 8px var(--wine), 0 24px 50px rgba(0,0,0,.55); }
+.muestra small { font: 800 10px/1.4 var(--body); letter-spacing: .16em; text-transform: uppercase; color: var(--wine); }
+.muestra q { font: italic 600 22px/1.2 var(--display); quotes: none; }
+.muestra span { font-size: 11px; color: #6d5a5a; }
+.nota { margin: 28px 0 0; color: var(--muted); font-size: 15px; }
+
+.como ol { margin: 0; padding-left: 1.2em; max-width: 60ch; font-size: 17px; }
+.como li { margin-bottom: 14px; }
+.como li::marker { color: var(--gold); font-weight: 800; }
+
+.versiones { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.version { display: grid; grid-template-columns: 120px 1fr; gap: 20px; align-items: start; }
+.version img { width: 100%; height: auto; border-radius: 6px; box-shadow: 0 14px 30px rgba(0,0,0,.5); display: block; }
+.version .info { display: flex; flex-direction: column; gap: 10px; height: 100%; }
+.version .price-line { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.version .stock { font: 800 12px/1 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--gold); transition: color .25s ease; }
+.product:hover .stock, .product:focus-within .stock { color: var(--fg); }
+.product:hover .was, .product:focus-within .was { color: rgba(243,233,226,.7); }
+.product:hover .off, .product:focus-within .off { background: var(--fg); color: var(--wine); }
+.product .btn[aria-disabled="true"] { opacity: .5; pointer-events: none; }
+
+.faq { max-width: 760px; }
+.faq details { border-bottom: 1px solid var(--line); padding: 18px 0; }
+.faq summary { cursor: pointer; font: 600 22px/1.25 var(--display); list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; color: var(--gold); font-family: var(--body); font-weight: 400; transition: transform .25s ease; }
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq details p { margin: 10px 0 0; color: var(--muted); }
+.faq a, footer a { color: var(--fg); }
+footer .contact { display: flex; gap: 18px; flex-wrap: wrap; }
+
+@media (max-width: 760px) {
+  .trae { grid-template-columns: 1fr; gap: 28px; }
+  .trae img { max-width: 200px; }
+  .niveles { grid-template-columns: 1fr; gap: 40px; }
+  .muestra { max-width: 210px; padding: 18px 16px; }
+  .muestra q { font-size: 19px; }
+  .versiones { grid-template-columns: 1fr; }
+}
+@media (max-width: 420px) {
+  .version { grid-template-columns: 92px 1fr; gap: 14px; }
+  .product h3 { font-size: 26px; }
+}
+
+/* ---------- Ventana de complementos ---------- */
+.addons { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 16px; background: rgba(7,4,5,.72);
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); opacity: 0; transition: opacity .25s ease; }
+.addons[hidden] { display: none; }
+.addons.on { opacity: 1; }
+.sheet { position: relative; width: min(560px, 100%); max-height: calc(100svh - 32px); overflow: auto; background: var(--bg-2);
+  border: 1px solid var(--line); border-radius: 16px; padding: 28px 24px 22px; transform: translateY(14px); transition: transform .3s cubic-bezier(.2,.7,.2,1); }
+.addons.on .sheet { transform: none; }
+.sheet h2 { font: 600 32px/1.05 var(--display); margin: 0 36px 8px 0; }
+.sheet > p { margin: 0 0 18px; color: var(--muted); font-size: 14px; }
+.close { position: absolute; top: 14px; right: 14px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line);
+  background: transparent; color: var(--fg); font-size: 20px; line-height: 1; cursor: pointer; }
+.addon-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.addon { display: grid; grid-template-columns: 56px 1fr auto; gap: 14px; align-items: center; padding: 10px; border: 1px solid var(--line);
+  border-radius: 12px; transition: background-color .2s ease, border-color .2s ease; }
+.addon.sel { background: rgba(140,28,58,.28); border-color: var(--wine-glow); }
+.addon img { width: 56px; height: auto; border-radius: 4px; display: block; }
+.addon h3 { font: 600 20px/1.1 var(--display); margin: 0; }
+.addon p { margin: 2px 0 4px; color: var(--muted); font-size: 13px; line-height: 1.35; }
+.addon .p { font-size: 14px; display: flex; gap: 8px; align-items: baseline; }
+.addon .p b { color: var(--fg); font-weight: 800; }
+.toggle { font: 800 11px/1 var(--body); letter-spacing: .08em; text-transform: uppercase; padding: 10px 12px; border-radius: 999px;
+  border: 1px solid var(--gold); background: transparent; color: var(--fg); cursor: pointer; white-space: nowrap; }
+.toggle[aria-pressed="true"] { background: var(--gold); color: #140a0b; }
+.resumen { margin: 18px 0 16px; padding-top: 14px; border-top: 1px solid var(--line); display: grid; gap: 6px; font-size: 14px; color: var(--muted); }
+.resumen div { display: flex; justify-content: space-between; gap: 12px; }
+.resumen .total { color: var(--fg); font-weight: 800; font-size: 16px; }
+.resumen .total span:last-child { font: 600 26px/1 var(--display); color: var(--gold); }
+.acciones { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.acciones .btn { flex: 1; text-align: center; }
+.acciones .skip { background: none; border: 0; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font: inherit; font-size: 14px; }
+.sheet .timer { font-size: 13px; margin-bottom: 14px; }
+@media (max-width: 520px) {
+  .addons { align-items: end; padding: 0; }
+  .sheet { border-radius: 16px 16px 0 0; max-height: 92svh; padding: 24px 16px calc(18px + env(safe-area-inset-bottom)); }
+  .sheet h2 { font-size: 27px; }
+  .addon { grid-template-columns: 44px 1fr auto; gap: 10px; padding: 8px; }
+  .addon img { width: 44px; }
+  .addon h3 { font-size: 18px; }
+  .addon p { display: none; }
+  .toggle { padding: 9px 10px; }
+  .resumen { margin: 14px 0 12px; }
+  .acciones { flex-direction: column; align-items: stretch; position: sticky; bottom: calc(-18px - env(safe-area-inset-bottom)); background: var(--bg-2);
+    margin: 0 -16px calc(-18px - env(safe-area-inset-bottom)); padding: 12px 16px calc(14px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
+}
+body.modal-open { overflow: hidden; }
+</style>
+
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+  <div>
+    <h2 id="gate-title">¿Tenés 18 años o más?</h2>
+    <p>Es un juego para adultos. Para entrar tenés que ser mayor de edad.</p>
+    <div class="row"><button class="btn" id="gate-yes" type="button">Sí, entrar</button><a href="https://www.google.com" rel="noopener">No</a></div>
+  </div>
+</div>
+
+<header class="hero" id="hero">
+  <canvas id="gl" aria-label="Mesa a la luz de las velas con copas, un cenicero, un mazo de cartas y dos personas en la penumbra"></canvas>
+  <div class="nogl" id="nogl"><p>Tu navegador no puede mostrar la mesa en 3D.</p></div>
+  <div class="vignette"></div>
+  <nav class="bar" id="bar" aria-label="Principal">
+    <a class="brand" href="#">Verdad <em>o</em> Deseo</a>
+    <div class="links">
+      <a href="#como">Cómo se juega</a>
+      <a href="#versiones">Versiones</a>
+      <button class="btn btn--sm" type="button" data-buy>Comprar</button>
+    </div>
+  </nav>
+  <div class="intro">
+    <h1>Verdad <em>o</em> deseo</h1>
+    <p class="lead">Cartas de preguntas y retos para jugar en pareja, en tres niveles: suave, intenso y explícito.</p>
+    <p class="facts">60 cartas · Para 2 · PDF o mazo físico</p>
+  </div>
+  <div class="ui bottom">
+    <p class="hint" id="hint">Probá una: tocá el mazo.</p>
+    <div class="chips" role="group" aria-label="Nivel">
+      <button class="chip" type="button" data-level="all" aria-pressed="true">Todos</button>
+      <button class="chip" type="button" data-level="1" aria-pressed="false">1 · Suave</button>
+      <button class="chip" type="button" data-level="2" aria-pressed="false">2 · Intenso</button>
+      <button class="chip" type="button" data-level="3" aria-pressed="false">3 · Explícito</button>
+    </div>
+    <div class="offer" data-offer>
+      <div class="offer-line">
+        <span class="timer"><span data-label>Termina en</span> <strong data-timer>15:00</strong></span>
+        <span class="was" data-was></span><span class="now" data-now></span><span class="off" data-off></span>
+      </div>
+      <div class="cta">
+        <button class="btn" type="button" data-buy>Comprar el PDF</button>
+        <a class="link" href="#como">Cómo se juega</a>
+      </div>
+    </div>
+  </div>
+  <button class="sr" id="draw-kb" type="button">Sacar una carta</button>
+  <span class="scroll" aria-hidden="true"></span>
+</header>
+
+<div class="veil" id="veil"></div>
+<div class="card" id="card" aria-live="polite"><span class="kind" id="c-kind"></span><span class="text" id="c-text"></span><span class="foot" id="c-foot"></span></div>
+<button class="btn stash" id="stash" type="button">Guardar</button>
+
+<main class="wrap">
+  <section class="block" id="trae" aria-labelledby="trae-title">
+    <h2 id="trae-title">Qué trae el juego</h2>
+    <div class="trae">
+      <img src="{{ 'vod-verdad-o-deseo.jpg' | asset_url }}" alt="Portada de Verdad o Deseo" width="480" height="720" loading="lazy">
+      <ul>
+        <li><b>60</b><span>Cartas de verdad y deseo, en tres niveles.</span></li>
+        <li><b>3</b><span>Niveles: suave, intenso y explícito. Arrancan por donde quieran.</span></li>
+        <li><b>1</b><span>PDF listo para imprimir y recortar en casa.</span></li>
+        <li><b>0</b><span>Minutos de espera: llega a tu mail apenas se acredita el pago.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block" id="niveles" aria-labelledby="niveles-title">
+    <h2 id="niveles-title">De una charla a una noche entera</h2>
+    <div class="niveles">
+      <div class="nivel">
+        <h3>1 · Suave</h3>
+        <p>Preguntas para conocerse y reírse un rato.</p>
+        <div class="muestra"><small>Verdad · Suave</small><q>¿Qué ropa mía te calienta más?</q><span>Responde quien sacó la carta.</span></div>
+      </div>
+      <div class="nivel">
+        <h3>2 · Intenso</h3>
+        <p>Confesiones y retos con contacto.</p>
+        <div class="muestra"><small>Deseo · Intenso</small><q>Sacale la ropa interior con los dientes.</q><span>Se cumple o se negocia.</span></div>
+      </div>
+      <div class="nivel">
+        <h3>3 · Explícito</h3>
+        <p>Sexo directo. Acuerden una palabra de seguridad antes de empezar.</p>
+        <div class="muestra n3"><small>Deseo · Explícito</small><q>Ac**á donde tu pareja te diga.</q><span>Se cumple o se negocia.</span></div>
+      </div>
+    </div>
+    <p class="nota">Cualquiera puede pasar una carta. Nadie hace nada que no quiera.</p>
+  </section>
+
+  <section class="block como" id="como" aria-labelledby="como-title">
+    <h2 id="como-title">Cómo se juega</h2>
+    <ol>
+      <li>Elijan un nivel. Conviene arrancar por el 1.</li>
+      <li>Uno saca una carta y la lee en voz alta.</li>
+      <li>Verdad: se responde. Deseo: se cumple, o se cambia por otra cosa que los dos acepten.</li>
+      <li>Cualquiera puede pasar una carta. Después le toca al otro.</li>
+    </ol>
+  </section>
+
+  <section class="block" id="versiones" aria-labelledby="versiones-title">
+    <h2 id="versiones-title">Versiones</h2>
+    <div class="versiones">
+      <article class="product version product--featured" data-offer>
+        <img src="{{ 'vod-verdad-o-deseo.jpg' | asset_url }}" alt="" width="480" height="720" loading="lazy">
+        <div class="info">
+          <span class="tag">PDF · Acceso inmediato</span>
+          <h3>Verdad o Deseo</h3>
+          <p>Las 60 cartas en PDF. Llega a tu mail apenas pagás y lo imprimís en casa.</p>
+          <span class="timer"><span data-label>Termina en</span> <strong data-timer>15:00</strong></span>
+          <div class="price-line"><span class="was" data-was></span><span class="price" data-now></span><span class="off" data-off></span></div>
+          <div class="row"><button class="btn" type="button" data-buy>Comprar el PDF</button></div>
+        </div>
+      </article>
+      <article class="product version">
+        <img src="{{ 'vod-verdad-o-deseo.jpg' | asset_url }}" alt="" width="480" height="720" loading="lazy">
+        <div class="info">
+          <span class="tag">Mazo físico · Próximamente</span>
+          <h3>Reservá tu mazo</h3>
+          <p>Las 60 cartas impresas, listas para jugar. Solo 50 unidades con 33 % off para los primeros que lo reserven. Se envían a partir del 10 de diciembre. Envío gratis a todo el país.</p>
+          <span class="stock" data-stock></span>
+          <div class="price-line"><span class="was" data-mazo-was></span><span class="price" data-mazo-now></span></div>
+          <div class="row"><a class="btn btn--ghost" href="#" data-mazo>Reservar mi mazo</a></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="block faq" id="faq" aria-labelledby="faq-title">
+    <h2 id="faq-title">Preguntas frecuentes</h2>
+    <details><summary>¿Cómo lo recibo?</summary><p>Por mail, apenas se acredita el pago, en la dirección que pongas al comprar. Si no te llega, revisá spam o escribinos.</p></details>
+    <details><summary>¿Lo puedo imprimir?</summary><p>Sí. Es un PDF pensado para imprimir y recortar en casa.</p></details>
+    <details><summary>¿Cuándo llega el mazo físico?</summary><p>Es una reserva: los mazos se envían a partir del 10 de diciembre. El envío es gratis a todo el país.</p></details>
+    <details><summary>¿Es para mayores de 18?</summary><p>Sí. El nivel 3 tiene contenido sexual explícito.</p></details>
+    <details><summary>¿Y si una carta no nos gusta?</summary><p>Se pasa y se saca otra. Nadie hace nada que no quiera.</p></details>
+    <details><summary>¿Cómo los contacto?</summary><p>Por mail a <a href="mailto:digitalesworldd@gmail.com">digitalesworldd@gmail.com</a> o por Instagram en <a href="https://www.instagram.com/verdad.deseo/" target="_blank" rel="noopener">@Verdad.deseo</a>.</p></details>
+  </section>
+
+  <footer>
+    <span>© Verdad o Deseo · Solo para mayores de 18 años.</span>
+    <span class="contact"><a href="mailto:digitalesworldd@gmail.com">digitalesworldd@gmail.com</a><a href="https://www.instagram.com/verdad.deseo/" target="_blank" rel="noopener">@Verdad.deseo</a></span>
+  </footer>
+</main>
+
+<div class="addons" id="addons" hidden role="dialog" aria-modal="true" aria-labelledby="addons-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Cerrar">×</button>
+    <h2 id="addons-title">Antes de pagar, ¿sumás algo más?</h2>
+    <p>Estos precios son solo para quien se lleva Verdad o Deseo.</p>
+    <div data-offer><span class="timer"><span data-label>Tu precio de oferta termina en</span> <strong data-timer>15:00</strong></span></div>
+    <ul class="addon-list" id="addon-list"></ul>
+    <div class="resumen" id="resumen"></div>
+    <div class="acciones">
+      <a class="btn" href="#" id="pay">Ir a pagar</a>
+      <button class="skip" type="button" id="skip">Seguir sin agregar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.VOD_SETTINGS = {
+    minutos: {{ section.settings.minutos | json }},
+    codigo: {{ section.settings.codigo | json }},
+    descuento: {{ section.settings.descuento | json }}
+  };
+  window.VOD_IMG = {
+    'otra-posicion': {{ 'vod-otra-posicion.jpg' | asset_url | json }},
+    'esta-noche-se-juega': {{ 'vod-esta-noche-se-juega.jpg' | asset_url | json }},
+    'sin-filtro': {{ 'vod-sin-filtro.jpg' | asset_url | json }},
+    'me-debes-una': {{ 'vod-me-debes-una.jpg' | asset_url | json }}
+  };
+  window.VOD_LIVE = {
+  {%- assign vod_handles = 'verdad-o-deseo-pdf,verdad-o-deseo-mazo-fisico-reserva,otra-posicion,esta-noche-se-juega,sin-filtro,me-debes-una' | split: ',' -%}
+  {%- for h in vod_handles -%}
+    {%- assign p = all_products[h] -%}
+    {%- assign v = p.variants.first -%}
+    {{ h | json }}: {% if p.id %}{"variant": {{ v.id }}, "precio": {{ v.price | divided_by: 100 }}, "tachado": {% if v.compare_at_price > v.price %}{{ v.compare_at_price | divided_by: 100 }}{% else %}null{% endif %}, "stock": {% if v.inventory_management %}{{ v.inventory_quantity }}{% else %}null{% endif %}}{% else %}null{% endif %}{% unless forloop.last %},{% endunless %}
+  {%- endfor -%}
+  };
+</script>
+
+<script>
+{% raw %}
+/* ================= CONFIG =================
+   Cambios frecuentes en una sola línea. Precios en pesos.
+   Si Shopify tiene el producto publicado, el precio, el tachado y el stock se toman de la tienda (VOD_LIVE). */
+var CONFIG = {
+  minutos: VOD_SETTINGS.minutos || 15,                 // duración del contador por visitante
+  codigo: VOD_SETTINGS.codigo || 'NOCHE50',            // código de Shopify que aplica la oferta (solo al PDF)
+  descuento: VOD_SETTINGS.descuento || 50,             // % del código, para mostrar el precio con oferta
+  pdf:  { handle: 'verdad-o-deseo-pdf', variant: 51562139255001, precio: 37500 },
+  mazo: { handle: 'verdad-o-deseo-mazo-fisico-reserva', variant: 51565634191577, precio: 48990, tachado: 72990, stock: 50, total: 50 },
+  extras: [
+    { handle: 'otra-posicion',       variant: 51562139484377, nombre: 'Otra Posición',       linea: 'Una guía para explorar en pareja',            precio: 11990, tachado: 24990, img: 'otra-posicion' },
+    { handle: 'esta-noche-se-juega', variant: 51562139549913, nombre: 'Esta Noche Se Juega', linea: '100 juegos para romper la rutina',            precio: 7990,  tachado: 17300, img: 'esta-noche-se-juega' },
+    { handle: 'sin-filtro',          variant: 51562140270809, nombre: 'Sin Filtro',          linea: '300 preguntas para conocerse cada vez más',   precio: 5390,  tachado: 11990, img: 'sin-filtro' },
+    { handle: 'me-debes-una',        variant: 51562140303577, nombre: 'Me Debés Una',        linea: 'Cupones para canjear cuando ustedes quieran', precio: 2990,  tachado: 5990,  img: 'me-debes-una' }
+  ]
+};
+
+(function () {
+  /* Datos reales de Shopify por encima de los de respaldo */
+  function live(p) {
+    var l = (window.VOD_LIVE || {})[p.handle];
+    if (!l) return;
+    p.variant = l.variant; p.precio = l.precio;
+    if (l.tachado) p.tachado = l.tachado;
+    if (typeof l.stock === 'number') p.stock = l.stock;
+  }
+  live(CONFIG.pdf); live(CONFIG.mazo); CONFIG.extras.forEach(live);
+
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var fmt = function (n) { return '$' + Math.round(n).toLocaleString('es-AR'); };
+  var oferta = Math.round(CONFIG.pdf.precio * (1 - CONFIG.descuento / 100));
+
+  /* ---------- Gate +18 ---------- */
+  var gate = $('#gate');
+  try { if (sessionStorage.getItem('vod-18') === '1') gate.hidden = true; } catch (e) {}
+  $('#gate-yes').addEventListener('click', function () {
+    try { sessionStorage.setItem('vod-18', '1'); } catch (e) {}
+    gate.hidden = true;
+  });
+
+  /* ---------- Barra que se vuelve píldora ---------- */
+  var bar = $('#bar');
+  function onScroll() { bar.classList.toggle('pill', window.scrollY > 60); }
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+  /* ---------- Contador: 15 minutos por visitante; al llegar a cero vuelve el precio normal ---------- */
+  var KEY = 'vod-oferta-fin', fin;
+  try { fin = parseInt(localStorage.getItem(KEY), 10); } catch (e) {}
+  if (!fin) { fin = Date.now() + CONFIG.minutos * 60000; try { localStorage.setItem(KEY, String(fin)); } catch (e) {} }
+  function activa() { return Date.now() < fin; }
+  $$('[data-label]').forEach(function (el) { el.dataset.orig = el.textContent; });
+
+  function pintarPrecios() {
+    var on = activa();
+    $$('[data-offer]').forEach(function (el) { el.classList.toggle('expired', !on); });
+    $$('[data-label]').forEach(function (el) { el.textContent = on ? el.dataset.orig : 'La oferta terminó'; });
+    $$('[data-was]').forEach(function (el) { el.textContent = fmt(CONFIG.pdf.precio); });
+    $$('[data-now]').forEach(function (el) { el.textContent = fmt(on ? oferta : CONFIG.pdf.precio); });
+    $$('[data-off]').forEach(function (el) { el.textContent = CONFIG.descuento + ' % off'; });
+    if (!on) $$('[data-timer]').forEach(function (el) { el.textContent = ''; });
+  }
+  var estaba = activa();
+  function tick() {
+    var r = Math.max(0, fin - Date.now()), m = Math.floor(r / 60000), s = Math.floor(r / 1000) % 60;
+    var txt = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    if (activa()) $$('[data-timer]').forEach(function (el) { el.textContent = txt; });
+    if (estaba !== activa()) { estaba = activa(); pintarPrecios(); resumen(); }
+  }
+  pintarPrecios(); tick(); setInterval(tick, 1000);
+
+  /* ---------- Mazo físico: stock real ---------- */
+  var M = CONFIG.mazo, btnMazo = $('[data-mazo]');
+  $('[data-mazo-was]').textContent = M.tachado ? fmt(M.tachado) : '';
+  $('[data-mazo-now]').textContent = fmt(M.precio);
+  if (M.stock > 0) {
+    $('[data-stock]').textContent = 'Quedan ' + M.stock + ' de ' + M.total;
+    btnMazo.href = '/cart/' + M.variant + ':1';
+  } else {
+    $('[data-stock]').textContent = 'Agotado';
+    btnMazo.textContent = 'Agotado'; btnMazo.setAttribute('aria-disabled', 'true'); btnMazo.removeAttribute('href');
+  }
+
+  /* ---------- Ventana de complementos ---------- */
+  var modal = $('#addons'), lista = $('#addon-list'), elegidos = {}, ultimoFoco = null;
+  CONFIG.extras.forEach(function (x) {
+    var li = document.createElement('li');
+    li.className = 'addon';
+    li.innerHTML =
+      '<img src="' + (window.VOD_IMG || {})[x.img] + '" alt="" width="56" height="84" loading="lazy">' +
+      '<div><h3></h3><p></p><div class="p"><span class="was"></span><b></b></div></div>' +
+      '<button class="toggle" type="button" aria-pressed="false">Agregar</button>';
+    $('h3', li).textContent = x.nombre;
+    $('p', li).textContent = x.linea;
+    $('.was', li).textContent = x.tachado ? fmt(x.tachado) : '';
+    $('b', li).textContent = fmt(x.precio);
+    var t = $('.toggle', li);
+    t.setAttribute('aria-label', 'Agregar ' + x.nombre);
+    t.addEventListener('click', function () {
+      var on = !elegidos[x.variant];
+      if (on) elegidos[x.variant] = x; else delete elegidos[x.variant];
+      t.setAttribute('aria-pressed', on ? 'true' : 'false');
+      t.textContent = on ? 'Agregado' : 'Agregar';
+      li.classList.toggle('sel', on);
+      resumen();
+    });
+    lista.appendChild(li);
+  });
+
+  function link(conExtras) {
+    var items = [CONFIG.pdf.variant + ':1'];
+    if (conExtras) Object.keys(elegidos).forEach(function (v) { items.push(v + ':1'); });
+    return '/cart/' + items.join(',') + (activa() ? '?discount=' + encodeURIComponent(CONFIG.codigo) : '');
+  }
+  function resumen() {
+    var base = activa() ? oferta : CONFIG.pdf.precio, total = base, filas = '';
+    filas += '<div><span>Verdad o Deseo · PDF</span><span>' + fmt(base) + '</span></div>';
+    Object.keys(elegidos).forEach(function (v) {
+      var x = elegidos[v]; total += x.precio;
+      filas += '<div><span></span><span>' + fmt(x.precio) + '</span></div>';
+    });
+    filas += '<div class="total"><span>Total</span><span>' + fmt(total) + '</span></div>';
+    var r = $('#resumen'); r.innerHTML = filas;
+    var nombres = Object.keys(elegidos).map(function (v) { return elegidos[v].nombre; });
+    $$('div', r).slice(1, 1 + nombres.length).forEach(function (d, i) { d.firstChild.textContent = nombres[i]; });
+    $('#pay').href = link(true);
+  }
+  function abrir(e) {
+    if (e) e.preventDefault();
+    ultimoFoco = document.activeElement;
+    resumen();
+    modal.hidden = false; document.body.classList.add('modal-open');
+    requestAnimationFrame(function () { modal.classList.add('on'); });
+    $('.toggle', modal).focus({ preventScroll: true });
+  }
+  function cerrar() {
+    modal.classList.remove('on'); document.body.classList.remove('modal-open');
+    setTimeout(function () { modal.hidden = true; }, 250);
+    if (ultimoFoco) ultimoFoco.focus({ preventScroll: true });
+  }
+  $$('[data-buy]').forEach(function (b) { b.addEventListener('click', abrir); });
+  $('[data-close]').addEventListener('click', cerrar);
+  modal.addEventListener('click', function (e) { if (e.target === modal) cerrar(); });
+  addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) cerrar(); });
+  $('#skip').addEventListener('click', function () { location.href = link(false); });
+  $('#pay').addEventListener('click', function () { this.href = link(true); });
+})();
+{% endraw %}
+</script>
+
+<script type="module">
+{% raw %}
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js';
+
+/* ================= Cartas ================= */
+const CARDS = [
+  { l: 1, k: 'V', t: '¿Qué fue lo primero que te gustó de mi cuerpo?' },
+  { l: 1, k: 'V', t: '¿Qué ropa mía te calienta más?' },
+  { l: 1, k: 'V', t: '¿Qué fantasía te dio vergüenza contarme alguna vez?' },
+  { l: 1, k: 'V', t: '¿Dónde te gustaría que te bese y nunca te animaste a pedirlo?' },
+  { l: 1, k: 'D', t: 'Besale el cuello un minuto sin usar las manos.' },
+  { l: 1, k: 'D', t: 'Sacate una prenda. La elige tu pareja.' },
+  { l: 1, k: 'D', t: 'Susurrale al oído qué le harías esta noche.' },
+  { l: 1, k: 'D', t: 'Sentate encima de tu pareja y besala hasta que diga basta.' },
+  { l: 2, k: 'V', t: '¿Cuál fue la mejor vez que {cogimos} y qué la hizo tan buena?' },
+  { l: 2, k: 'V', t: '¿Te hiciste una {paja} pensando en mí? Contá cómo fue.' },
+  { l: 2, k: 'V', t: '¿Qué posición querés probar que nunca hicimos?' },
+  { l: 2, k: 'V', t: '¿Qué parte de mi cuerpo te gustaría tener en la boca ahora?' },
+  { l: 2, k: 'D', t: 'Vendale los ojos y hacele adivinar qué le das a probar.' },
+  { l: 2, k: 'D', t: 'Sacale la ropa interior con los dientes.' },
+  { l: 2, k: 'D', t: 'Pasale la lengua desde el ombligo hasta donde te deje.' },
+  { l: 2, k: 'D', t: 'Tocalo/a entre las piernas por encima de la ropa durante un minuto.' },
+  { l: 2, k: 'D', t: 'Masajeale el {culo} con aceite durante dos minutos.' },
+  { l: 3, k: 'D', t: '{Chupale} la {pija} sin usar las manos hasta que te pida que pares.' },
+  { l: 3, k: 'D', t: '{Chupale} la {concha} hasta que {acabe}.' },
+  { l: 3, k: 'D', t: '{Cogé} en la posición que elija tu pareja, sin cambiar hasta {acabar}.' },
+  { l: 3, k: 'D', t: '{Tocate} delante de tu pareja, mirándola a los ojos, hasta {acabar}.' },
+  { l: 3, k: 'D', t: 'Hagan un {69} durante tres minutos. Pierde quien pare primero.' },
+  { l: 3, k: 'D', t: '{Acabá} donde tu pareja te diga.' },
+  { l: 3, k: 'D', t: 'Atale las manos y hacé con su cuerpo lo que quieras durante cinco minutos.' },
+  { l: 3, k: 'V', t: '¿Qué es lo más sucio que querés que te haga y nunca me pediste?' },
+  { l: 3, k: 'V', t: '¿Probarías por el {culo}? ¿Dando o recibiendo?' },
+  { l: 3, k: 'V', t: '¿Cómo te gusta que te {chupe}? Explicalo con detalle.' }
+];
+const NAMES = { 1: 'Suave', 2: 'Intenso', 3: 'Explícito' };
+const FOOT = { V: 'Responde quien sacó la carta.', D: 'Se cumple o se negocia. Siempre se puede pasar.' };
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ================= Renderer ================= */
+const canvas = document.getElementById('gl');
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+} catch (e) {
+  document.getElementById('nogl').classList.add('on');
+  throw e;
+}
+renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.NoToneMapping;
+renderer.autoClear = false;
+
+const scene = new THREE.Scene();
+const hero = document.getElementById('hero');
+
+const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 40);
+const TARGET = new THREE.Vector3(0, 0.74, 0);
+
+/* Luces: casi nada de ambiente; la luz la ponen las velas y un foco tenue sobre la mesa */
+scene.add(new THREE.HemisphereLight('#4a2a55', '#0a0406', .35));
+const key = new THREE.SpotLight('#ffc98f', 4.2, 4.2, .42, .9, 1.6);
+key.position.set(.15, 2.4, .25);
+key.target.position.set(0, .74, 0); scene.add(key.target);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.bias = -0.0004; key.shadow.normalBias = 0.01; key.shadow.radius = 5;
+scene.add(key);
+const rim = new THREE.DirectionalLight('#7a4cff', .35);
+rim.position.set(-2.2, 1.6, -2.6);
+scene.add(rim);
+
+/* ================= Utilidades low-poly ================= */
+const mats = {};
+function M(color, o = {}) {
+  const k = color + JSON.stringify(o);
+  return mats[k] || (mats[k] = new THREE.MeshStandardMaterial({ color, flatShading: true, roughness: .78, metalness: 0, ...o }));
+}
+function hash(x, y, z) { const n = Math.sin(x * 12.9898 + y * 78.233 + z * 37.719) * 43758.5453; return n - Math.floor(n); }
+/* Desplaza vértices de forma estable (mismo punto, mismo desplazamiento) para marcar facetas sin abrir grietas */
+function facet(geo, amt) {
+  const p = geo.attributes.position;
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+    const a = Math.round(x * 1e4), b = Math.round(y * 1e4), c = Math.round(z * 1e4);
+    p.setXYZ(i, x + (hash(a, b, c) - .5) * amt, y + (hash(b, c, a) - .5) * amt, z + (hash(c, a, b) - .5) * amt);
+  }
+  geo.computeVertexNormals();
+  return geo;
+}
+function mesh(geo, mat, parent, pos, scl, rot) {
+  const m = new THREE.Mesh(geo, mat);
+  m.castShadow = true; m.receiveShadow = true;
+  if (pos) m.position.set(...pos);
+  if (scl) m.scale.set(...scl);
+  if (rot) m.rotation.set(...rot);
+  parent && parent.add(m);
+  return m;
+}
+const UP = new THREE.Vector3(0, 1, 0);
+/* Segmento cónico entre dos puntos (brazos, piernas, cuello) */
+function limb(parent, a, b, r1, r2, mat, seg = 6) {
+  const A = new THREE.Vector3(...a), B = new THREE.Vector3(...b);
+  const d = B.clone().sub(A), len = d.length();
+  const g = facet(new THREE.CylinderGeometry(r2, r1, len, seg, 2), Math.min(r1, r2) * .25);
+  const m = mesh(g, mat, parent);
+  m.position.copy(A).addScaledVector(d, .5);
+  m.quaternion.setFromUnitVectors(UP, d.normalize());
+  mesh(new THREE.IcosahedronGeometry(r1 * 1.02, 0), mat, parent, a);
+  return m;
+}
+function blob(parent, r, mat, pos, scl, amt = .1, detail = 1) {
+  return mesh(facet(new THREE.IcosahedronGeometry(r, detail), r * amt), mat, parent, pos, scl);
+}
+
+/* ================= Escenario ================= */
+const floor = new THREE.Mesh(new THREE.CircleGeometry(14, 48), new THREE.MeshStandardMaterial({ color: '#2a1620', roughness: 1 }));
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+/* Alfombra redonda bajo la mesa */
+mesh(new THREE.CylinderGeometry(1.3, 1.3, .012, 18), M('#5a1428'), scene, [0, .006, 0]);
+
+const TOP = 0.7425;           // altura de la tapa de la mesa
+const wood = M('#9a4524'), woodDark = M('#5a2414');
+const table = new THREE.Group(); scene.add(table);
+mesh(facet(new THREE.CylinderGeometry(.56, .56, .045, 14, 1), .012), wood, table, [0, .72, 0]);
+mesh(new THREE.CylinderGeometry(.53, .5, .05, 14, 1), woodDark, table, [0, .69, 0]);
+mesh(new THREE.CylinderGeometry(.045, .06, .66, 6), woodDark, table, [0, .36, 0]);
+mesh(facet(new THREE.CylinderGeometry(.1, .3, .05, 8), .01), woodDark, table, [0, .025, 0]);
+
+function chair(x, rotY) {
+  const g = new THREE.Group(); g.position.set(x, 0, 0); g.rotation.y = rotY; scene.add(g);
+  const c = M('#4a1f2c');
+  mesh(new THREE.BoxGeometry(.44, .05, .42), c, g, [0, .44, 0]);
+  for (const [lx, lz] of [[-.18, -.17], [.18, -.17], [-.18, .17], [.18, .17]]) mesh(new THREE.CylinderGeometry(.018, .016, .44, 5), c, g, [lx, .22, lz]);
+  for (const lx of [-.18, .18]) mesh(new THREE.CylinderGeometry(.018, .018, .5, 5), c, g, [lx, .7, -.19]);
+  mesh(new THREE.BoxGeometry(.44, .14, .035), c, g, [0, .9, -.19]);
+  return g;
+}
+
+/* ================= Personas ================= */
+const later = [];   // cosas que necesitan las cartas, que se definen más abajo
+/* Segmento cónico sin articulación */
+function seg(parent, a, b, r1, r2, mat, n = 7) {
+  const A = new THREE.Vector3(...a), B = new THREE.Vector3(...b), d = B.clone().sub(A), len = d.length();
+  const m = mesh(facet(new THREE.CylinderGeometry(r2, r1, len, n, 1), Math.min(r1, r2) * .18), mat, parent);
+  m.position.copy(A).addScaledVector(d, .5);
+  m.quaternion.setFromUnitVectors(UP, d.normalize());
+  return m;
+}
+const lerp3 = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+/* Mano: palma + dedos juntos + pulgar. f = hacia dónde apunta, n = dorso de la mano */
+function hand(parent, at, f, n, skinMat, size, thumbSide = 1) {
+  const F = new THREE.Vector3(...f).normalize(), N = new THREE.Vector3(...n).normalize();
+  const R = new THREE.Vector3().crossVectors(N, F).normalize(); N.crossVectors(F, R).normalize();
+  const h = new THREE.Group(); h.position.set(...at);
+  h.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(R, N, F)); parent.add(h);
+  const k = size;
+  mesh(facet(new THREE.BoxGeometry(.05 * k, .018 * k, .055 * k, 2, 1, 2), .004 * k), skinMat, h, [0, 0, .026 * k]);
+  const fing = mesh(facet(new THREE.BoxGeometry(.046 * k, .014 * k, .048 * k, 3, 1, 2), .004 * k), skinMat, h, [0, -.003 * k, .075 * k]);
+  fing.rotation.x = .18;
+  const th = mesh(facet(new THREE.BoxGeometry(.015 * k, .014 * k, .042 * k, 1, 1, 2), .003 * k), skinMat, h, [thumbSide * .03 * k, -.004 * k, .03 * k]);
+  th.rotation.y = thumbSide * .55;
+  return h;
+}
+/* Brazo con hombro, bíceps, codo, antebrazo y muñeca */
+function arm(parent, sh, el, wr, o) {
+  const rU = o.r, rE = o.r * .74, rW = o.r * .52;
+  blob(parent, rU * 1.08, o.sleeve, sh, [1, .85, 1], .06, 1);                    // hombro
+  seg(parent, sh, el, rU, rE * 1.05, o.short ? o.skin : o.sleeve, 7);
+  blob(parent, rE * 1.06, o.short ? o.skin : o.sleeve, el, [1, 1, 1], .05, 1);   // codo
+  if (o.cuff) seg(parent, el, lerp3(el, wr, .16), rE * 1.2, rE * 1.12, o.sleeve, 7);
+  seg(parent, el, wr, rE * 1.02, rW, o.skin, 7);
+  blob(parent, rW * 1.05, o.skin, wr, [1.15, .85, 1], .05, 0);                   // muñeca
+}
+
+
+function person(o) {
+  const g = new THREE.Group();
+  const skin = M(o.skin), top = M(o.top), bottom = M(o.bottom), shoe = M(o.shoe, { roughness: .5 }), hair = M(o.hair, { roughness: .6 });
+  // cadera y piernas (sentado, mirando a +z)
+  blob(g, .1, bottom, [0, .53, -.02], [1.65, .85, 1.45], .12);
+  for (const s of [-1, 1]) {
+    limb(g, [s * .085, .53, 0], [s * .09, .52, .4], .075, .06, bottom, 7);
+    limb(g, [s * .09, .51, .4], [s * .095, .08, .44], .052, .036, o.female ? skin : bottom, 6);
+    if (o.female) {
+      mesh(new THREE.BoxGeometry(.06, .05, .16), shoe, g, [s * .095, .045, .48]);
+      mesh(new THREE.CylinderGeometry(.008, .006, .07, 4), shoe, g, [s * .095, .035, .41]);
+    } else {
+      mesh(facet(new THREE.BoxGeometry(.075, .05, .17, 2, 1, 2), .008), shoe, g, [s * .095, .025, .48]);
+    }
+  }
+  // torso inclinado hacia la mesa
+  const T = new THREE.Group(); T.position.set(0, .55, -.03); T.rotation.x = o.lean; g.add(T);
+  const prof = (o.female
+    ? [[0, 0], [.125, 0], [.14, .06], [.112, .17], [.13, .27], [.145, .33], [.135, .39], [.085, .43], [0, .44]]
+    : [[0, 0], [.14, 0], [.15, .08], [.15, .2], [.172, .3], [.19, .37], [.16, .42], [.08, .45], [0, .46]]
+  ).map(([r, y]) => new THREE.Vector2(r, y));
+  mesh(facet(new THREE.LatheGeometry(prof, 8), .012), top, T, [0, 0, 0], [1, 1, .64]);
+  if (o.female) {
+    for (const s of [-1, 1]) blob(T, .052, top, [s * .058, .3, .07], [1, .95, .9], .08, 0);
+    mesh(facet(new THREE.CylinderGeometry(.09, .12, .1, 8), .01), skin, T, [0, .405, 0], [1, 1, .62]); // escote
+  }
+  limb(T, [0, .42, 0], [0, .51, .015], .045, .04, skin, 6);
+  const head = blob(T, .1, skin, [0, .61, .025], [.86, 1.12, .98], .07);
+  // pelo
+  if (o.female) {
+    blob(T, .108, hair, [0, .645, -.012], [.98, 1.0, 1.0], .1);
+    blob(T, .1, hair, [0, .58, -.03], [1.02, .95, .9], .14);
+    blob(T, .05, hair, [.045, .67, .07], [1.1, .7, 1], .2, 0);          // flequillo de costado
+    blob(T, .045, hair, [-.07, .6, .05], [.6, 1.3, .8], .2, 0);
+  } else {
+    blob(T, .104, hair, [0, .655, -.01], [.95, .8, 1.02], .1);
+  }
+  // brazos: cada pose define codo, muñeca y cómo queda la mano
+  const ct = Math.cos(o.lean), st = Math.sin(o.lean);
+  const toG = (x, y, z) => [x, .55 + y * ct - z * st, -.03 + y * st + z * ct];
+  const sw = o.female ? .14 : .175;
+  for (const s of [-1, 1]) {
+    const P = s < 0 ? o.armL : o.armR;
+    const sh = toG(s * sw, .375, 0);
+    arm(g, sh, P.el, P.wr, { r: o.female ? .036 : .046, sleeve: o.female ? skin : top, skin, short: o.female, cuff: !o.female });
+    const f = P.f || new THREE.Vector3(...P.wr).sub(new THREE.Vector3(...P.el)).setY(0).toArray();
+    const fv = new THREE.Vector3(...f).normalize().multiplyScalar(o.female ? .012 : .016);
+    hand(g, [P.wr[0] + fv.x, P.wr[1] + fv.y, P.wr[2] + fv.z], f, P.n || [0, 1, 0], skin, o.female ? .82 : 1, -s);
+    if (P.card) P.card(g);
+  }
+  return g;
+}
+
+chair(-.82, Math.PI / 2);
+chair(.92, -Math.PI / 2);
+const her = person({ female: true, skin: '#c9897a', top: '#e6b49c', bottom: '#d7a38b', shoe: '#c9183c', hair: '#3d2244',
+  lean: .26,
+  armL: { el: [-.16, TOP + .028, .22], wr: [-.12, TOP + .022, .46] },
+  armR: { el: [.16, TOP + .028, .23], wr: [.13, TOP + .022, .45] } });
+her.position.set(-.8, 0, 0); her.rotation.y = Math.PI / 2; scene.add(her);
+/* Él: echado hacia atrás en la silla, leyendo una carta */
+const him = person({ female: false, skin: '#a8664c', top: '#d9d2c8', bottom: '#27305e', shoe: '#3a2420', hair: '#2b1b20',
+  lean: -.2,
+  armL: { el: [-.2, .64, .02], wr: [-.13, .575, .22], n: [0, 1, 0] },                      // mano sobre el muslo
+  armR: { el: [.2, .72, .06], wr: [.09, .98, .24], f: [-.15, .95, .1], n: [.25, 0, 1],     // mano en alto con la carta
+    card: g => later.push(() => {
+      const c = cardMesh(); c.scale.setScalar(1.3);
+      c.position.set(.08, 1.06, .25);
+      c.rotation.set(Math.PI / 2 - .25, 1.05, 0, 'YXZ');
+      g.add(c);
+    }) } });
+him.position.set(.9, 0, 0); him.rotation.y = -Math.PI / 2; scene.add(him);
+
+/* ================= Objetos sobre la mesa ================= */
+const glassMat = new THREE.MeshStandardMaterial({ color: '#f3f0ff', flatShading: true, roughness: .15, transparent: true, opacity: .32, depthWrite: false });
+const wineMat = M('#a3123a', { roughness: .3 });
+function wineGlass(x, z, fill) {
+  const g = new THREE.Group(); g.position.set(x, TOP, z); scene.add(g);
+  const pts = [[0, 0], [.036, 0], [.036, .006], [.007, .014], [.006, .085], [.032, .098], [.044, .135], [.042, .175], [.037, .195]].map(([r, y]) => new THREE.Vector2(r, y));
+  const glass = new THREE.Mesh(new THREE.LatheGeometry(pts, 9), glassMat); glass.castShadow = true; g.add(glass);
+  const h = .1 + fill * .06;
+  const w = [[0, .1], [.03, .1], [.042, .13], [.0435, h], [0, h]].map(([r, y]) => new THREE.Vector2(r * .96, y));
+  mesh(new THREE.LatheGeometry(w, 9), wineMat, g);
+  return g;
+}
+wineGlass(-.29, .0, .7);
+const g2 = wineGlass(.3, .17, .45);
+mesh(new THREE.BoxGeometry(.016, .012, .004), M('#e0235a'), g2, [.0, .193, .037]); // marca de labial
+
+// Cenicero + cigarrillo
+const ash = new THREE.Group(); ash.position.set(.06, TOP, -.3); scene.add(ash);
+mesh(facet(new THREE.CylinderGeometry(.085, .075, .032, 8), .004), M('#f2b234', { roughness: .4 }), ash, [0, .016, 0]);
+mesh(new THREE.CylinderGeometry(.063, .055, .02, 8), M('#5b3a2a'), ash, [0, .024, 0]);
+const cig = new THREE.Group(); cig.position.set(-.07, .036, .01); cig.rotation.set(0, -.5, -.12); ash.add(cig);
+mesh(new THREE.CylinderGeometry(.0065, .0065, .068, 6), M('#fbf8f2'), cig, [.04, 0, 0], null, [0, 0, Math.PI / 2]);
+mesh(new THREE.CylinderGeometry(.0066, .0066, .024, 6), M('#e89a4a'), cig, [-.006, 0, 0], null, [0, 0, Math.PI / 2]);
+mesh(new THREE.CylinderGeometry(.0063, .0063, .012, 6), M('#8d8580'), cig, [.08, 0, 0], null, [0, 0, Math.PI / 2]);
+const ember = mesh(new THREE.IcosahedronGeometry(.0068, 0), new THREE.MeshStandardMaterial({ color: '#ff7a2a', emissive: '#ff5a10', emissiveIntensity: 2.5, flatShading: true }), cig, [.087, 0, 0]);
+const emberLight = new THREE.PointLight('#ff8a3a', .25, .7, 2); emberLight.position.set(0, .03, 0); ash.add(emberLight);
+for (let i = 0; i < 6; i++) blob(ash, .008, M('#8f8a90'), [(hash(i, 1, 2) - .5) * .06, .036, (hash(2, i, 1) - .5) * .06], [1, .4, 1], .3, 0);
+
+// Corbata: cinta plana que se dobla sobre la mesa
+function ribbon(points, w0, w1, mat) {
+  const curve = new THREE.CatmullRomCurve3(points.map(p => new THREE.Vector3(...p)));
+  const n = 22, pos = [], idx = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n, p = curve.getPoint(t), tg = curve.getTangent(t);
+    const side = new THREE.Vector3(-tg.z, 0, tg.x).normalize();
+    const w = (w0 + (w1 - w0) * Math.pow(t, 1.6)) / 2;
+    const lift = (hash(i, 3, 7) - .5) * .004;
+    pos.push(p.x - side.x * w, p.y + lift, p.z - side.z * w, p.x + side.x * w, p.y + lift * .3, p.z + side.z * w);
+    if (i < n) { const a = i * 2; idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); }
+  }
+  const tip = curve.getPoint(1), tg = curve.getTangent(1);
+  pos.push(tip.x + tg.x * w1 * .5, tip.y, tip.z + tg.z * w1 * .5);
+  const last = (n) * 2; idx.push(last, last + 2, last + 1);
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geo.setIndex(idx); geo.computeVertexNormals();
+  return mesh(geo, mat, scene);
+}
+const tieY = TOP + .004;
+ribbon([[.42, tieY, -.16], [.33, tieY + .006, -.05], [.2, tieY + .002, -.02], [.14, tieY + .01, .1], [.24, tieY + .004, .22], [.36, tieY, .32]], .02, .06,
+  new THREE.MeshStandardMaterial({ color: '#232661', flatShading: true, roughness: .32, side: THREE.DoubleSide }));
+
+// Corpiño colgando del borde de la mesa, hacia la cámara
+function tube(parent, pts, r, mat) {
+  const c = new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(...p)));
+  return mesh(new THREE.TubeGeometry(c, 18, r, 4), mat, parent);
+}
+{
+  const n = new THREE.Vector3(-.5, 0, .866), E = n.clone().multiplyScalar(.555);
+  const bra = new THREE.Group(); bra.position.set(E.x, TOP + .022, E.z); bra.rotation.y = Math.atan2(n.x, n.z); scene.add(bra);
+  const cupMat = M('#c4173f', { roughness: .45 }), trim = M('#1c0a10', { roughness: .5 });
+  const bounce = new THREE.PointLight('#ff8a4a', .35, 1, 2); bounce.position.set(0, -.02, .25); bra.add(bounce);
+  for (const s of [-1, 1]) {
+    // copa: media esfera con la parte abierta hacia la mesa, colgando del borde
+    const cup = mesh(new THREE.SphereGeometry(.05, 8, 3, 0, Math.PI * 2, 0, Math.PI / 2), cupMat, bra, [s * .056, -.085, .026], [1.12, .42, 1.0], [Math.PI / 2, s * .22, s * -.25]);
+    cup.material.side = THREE.DoubleSide;
+    tube(bra, [[s * .012, -.05, .03], [s * .04, -.038, .034], [s * .075, -.045, .032], [s * .102, -.07, .03]], .0045, trim);     // borde de encaje
+    // bretel: sube por el borde y queda apoyado sobre la mesa
+    tube(bra, [[s * .06, -.04, .03], [s * .062, .002, .012], [s * .058, .006, -.03], [s * .04, .005, -.09], [s * .012, .005, -.11]], .0035, cupMat);
+  }
+  mesh(new THREE.BoxGeometry(.016, .03, .01), trim, bra, [0, -.088, .04]);                                       // centro
+  tube(bra, [[-.16, -.2, .03], [-.12, -.13, .035], [-.06, -.128, .04], [0, -.118, .042], [.06, -.128, .04], [.12, -.135, .035], [.15, -.18, .03], [.14, -.24, .03]], .005, trim); // contorno que cuelga
+}
+
+/* ================= Velas ================= */
+const glowTex = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const x = c.getContext('2d'), g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+  g.addColorStop(0, 'rgba(255,214,140,1)'); g.addColorStop(.25, 'rgba(255,170,80,.45)'); g.addColorStop(1, 'rgba(255,120,40,0)');
+  x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+})();
+const candles = [];
+function candle(x, z, h, color, shadow) {
+  const g = new THREE.Group(); g.position.set(x, TOP, z); scene.add(g);
+  const wax = M(color, { roughness: .9 });
+  mesh(facet(new THREE.CylinderGeometry(.034, .036, .012, 8), .002), M('#c99a3e', { roughness: .35, metalness: .3 }), g, [0, .006, 0]); // platito
+  mesh(facet(new THREE.CylinderGeometry(.021, .023, h, 7, 2), .003), wax, g, [0, .012 + h / 2, 0]);
+  blob(g, .009, wax, [.017, .012 + h * .7, .006], [1, 1.8, 1], .2, 0); // chorreadura
+  mesh(new THREE.CylinderGeometry(.0015, .0015, .012, 3), M('#1a0f0c'), g, [0, .018 + h, 0]);
+  const flame = new THREE.Mesh(new THREE.ConeGeometry(.008, .03, 5), new THREE.MeshBasicMaterial({ color: '#ffd27a' }));
+  flame.position.set(0, .032 + h, 0); g.add(flame);
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: '#ffb766', transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: .9 }));
+  halo.scale.setScalar(.16); halo.position.copy(flame.position); g.add(halo);
+  const light = new THREE.PointLight('#ff9a48', 1.1, 1.8, 1.7);
+  light.position.set(0, .04 + h, 0); g.add(light);
+  if (shadow) { light.castShadow = true; light.shadow.mapSize.set(512, 512); light.shadow.bias = -0.002; light.shadow.radius = 6; }
+  candles.push({ flame, halo, light, base: .75, ph: Math.random() * 10 });
+}
+candle(-.2, -.25, .13, '#efe2c9', true);
+candle(-.11, -.33, .085, '#efe2c9', false);
+candle(.3, -.2, .1, '#9c1d36', false);
+
+/* ================= Cartas y mazo ================= */
+const CW = .063, CH = .088, CT = .0022;
+function tex(draw, w = 512, h = 716) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  return t;
+}
+const backTex = tex((x, w, h) => {
+  x.fillStyle = '#8c1c3a'; x.fillRect(0, 0, w, h);
+  x.strokeStyle = '#f6c45a'; x.lineWidth = 10; x.strokeRect(26, 26, w - 52, h - 52);
+  x.lineWidth = 3; x.globalAlpha = .55;
+  for (let i = -h; i < w + h; i += 46) { x.beginPath(); x.moveTo(i, 40); x.lineTo(i + h, h - 40 + 0); x.stroke(); x.beginPath(); x.moveTo(i + h, 40); x.lineTo(i, h - 40); x.stroke(); }
+  x.globalAlpha = 1; x.fillStyle = '#8c1c3a'; x.beginPath(); x.ellipse(w / 2, h / 2, 120, 120, 0, 0, 7); x.fill();
+  x.strokeStyle = '#f6c45a'; x.lineWidth = 8; x.stroke();
+  x.fillStyle = '#f6c45a'; x.font = 'italic 600 110px "Cormorant Garamond", serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('V·D', w / 2, h / 2 + 6);
+  x.clearRect(0, 0, 0, 0);
+});
+const mask = w => w.replace(/\S+/g, p => p.length <= 2 ? p[0] + '*' : p.length === 3 ? p[0] + '*' + p[2] : p.slice(0, 2) + '*'.repeat(p.length - 3) + p.slice(-1));
+const plain = t => t.replace(/\{([^}]+)\}/g, (m, w) => mask(w));
+function wrap(x, text, maxW) {
+  const words = text.split(' '), lines = []; let line = '';
+  for (const w of words) { const t = line ? line + ' ' + w : w; if (x.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t; }
+  if (line) lines.push(line);
+  return lines;
+}
+/* Cara de la carta con el texto real, para que gire y se lea en un solo movimiento */
+function frontTex(card) {
+  return tex((x, w, h) => {
+    x.fillStyle = card && card.l === 3 ? '#f7dfe0' : '#f6eadb'; x.fillRect(0, 0, w, h);
+    x.strokeStyle = '#8c1c3a'; x.lineWidth = 7; x.strokeRect(26, 26, w - 52, h - 52);
+    if (!card) return;
+    const pad = 100, maxW = w - pad * 2;
+    x.textBaseline = 'top'; x.textAlign = 'left';
+    x.fillStyle = '#8c1c3a'; x.font = '800 34px Manrope, system-ui, sans-serif';
+    if ('letterSpacing' in x) x.letterSpacing = '6px';
+    x.fillText(((card.k === 'V' ? 'Verdad' : 'Deseo') + ' · ' + NAMES[card.l]).toUpperCase(), pad, 110);
+    if ('letterSpacing' in x) x.letterSpacing = '0px';
+    let size = 92, lines;
+    do { x.font = `italic 600 ${size}px "Cormorant Garamond", Georgia, serif`; lines = wrap(x, plain(card.t), maxW); size -= 4; } while (lines.length * size * 1.2 > h * .52 && size > 52);
+    size += 4; const lh = size * 1.18, top = h / 2 - (lines.length * lh) / 2 - 10;
+    x.fillStyle = '#23140d';
+    lines.forEach((l, i) => x.fillText(l, pad, top + i * lh));
+    x.fillStyle = '#6d5a5a'; x.font = '400 34px Manrope, system-ui, sans-serif';
+    const foot = wrap(x, FOOT[card.k], maxW);
+    foot.forEach((l, i) => x.fillText(l, pad, h - 110 - (foot.length - i) * 46));
+  }, 1024, 1430);
+}
+const edgeMat = M('#f6eadb');
+const backMat = new THREE.MeshStandardMaterial({ map: backTex, roughness: .6 });
+function cardMesh(front) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(CW, CT, CH), [edgeMat, edgeMat, backMat, front || new THREE.MeshStandardMaterial({ map: frontTex(null), roughness: .6 }), edgeMat, edgeMat]);
+  m.castShadow = true; m.receiveShadow = true;
+  return m;
+}
+// cartas sueltas
+for (const [x, z, r] of [[-.22, .15, .5], [-.17, .2, -.3], [.18, -.12, 1.1], [-.08, -.2, 2.4]]) {
+  const c = cardMesh(); c.position.set(x, TOP + CT / 2 + .001, z); c.rotation.y = r; scene.add(c);
+}
+// mazo
+const deck = new THREE.Group(); deck.position.set(.0, TOP, .05); deck.rotation.y = .25; scene.add(deck);
+const DECK_N = 9;
+const deckCards = [];
+for (let i = 0; i < DECK_N; i++) {
+  const c = cardMesh();
+  c.position.set((hash(i, 5, 1) - .5) * .003, CT / 2 + i * CT, (hash(1, i, 5) - .5) * .003);
+  c.rotation.y = (hash(i, 9, 9) - .5) * .06;
+  deck.add(c); deckCards.push(c);
+}
+const topCard = deckCards[DECK_N - 1];
+const cardScene = new THREE.Scene();
+cardScene.add(new THREE.AmbientLight('#ffe2c4', 1.4));
+const cardKey = new THREE.DirectionalLight('#ffd6a8', 1.6); cardKey.position.set(.3, 2, .6); cardScene.add(cardKey);
+const dimScene = new THREE.Scene(), orthoCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+const dimMat = new THREE.MeshBasicMaterial({ color: '#070405', transparent: true, opacity: 0, depthTest: false, depthWrite: false });
+dimScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), dimMat));
+let dim = 0;
+later.forEach(f => f());
+const ring = new THREE.Mesh(new THREE.RingGeometry(.075, .085, 12), new THREE.MeshBasicMaterial({ color: '#ffd58a', transparent: true, opacity: .0, depthWrite: false }));
+ring.rotation.x = -Math.PI / 2; ring.position.y = .0015; deck.add(ring);
+const topFront = new THREE.MeshBasicMaterial({ map: frontTex(null) });
+topCard.material[3] = topFront;
+// zona de toque más grande que el mazo
+const hit = new THREE.Mesh(new THREE.BoxGeometry(.13, .06, .16), new THREE.MeshBasicMaterial({ visible: false }));
+hit.position.y = .02; deck.add(hit);
+
+/* ================= Humo low-poly ================= */
+const smokeGeo = new THREE.IcosahedronGeometry(.014, 0);
+const puffs = [];
+for (let i = 0; i < 18; i++) {
+  const m = new THREE.Mesh(smokeGeo, new THREE.MeshStandardMaterial({ color: '#ffffff', flatShading: true, transparent: true, opacity: 0, depthWrite: false, roughness: 1 }));
+  m.userData.t = -i * .2 - Math.random() * .2; m.userData.ph = Math.random() * 6.28; m.userData.life = 3 + Math.random() * 1.4; scene.add(m); puffs.push(m);
+}
+const emberWorld = new THREE.Vector3();
+
+/* ================= Cámara ================= */
+let az = .3, el = .78, dist = 2, tAz = 0, tEl = 0, cAz = 0, cEl = 0;
+function frameCamera() {
+  const w = hero.clientWidth, h = hero.clientHeight, a = w / h;
+  renderer.setSize(w, h, false);
+  camera.aspect = a;
+  camera.fov = a < 1 ? 42 : 30;
+  dist = a >= 1.25 ? 2.9 : a >= 1 ? 3.2 : 2.1 + (1 - a) * 1.6;
+  az = a < 1 ? .55 : .3;
+  el = a < 1 ? .76 : .64;
+  TARGET.set(0, a < 1 ? .72 : .8, a < 1 ? .02 : .03);
+  camera.updateProjectionMatrix();
+}
+function placeCamera() {
+  const A = az + cAz, E = el + cEl;
+  camera.position.set(TARGET.x + Math.sin(A) * Math.cos(E) * dist, TARGET.y + Math.sin(E) * dist, TARGET.z + Math.cos(A) * Math.cos(E) * dist);
+  camera.lookAt(TARGET);
+}
+frameCamera(); addEventListener('resize', () => { frameCamera(); if (state === 'up') settleOverlay(); });
+let heroVisible = true;
+new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; }).observe(hero);
+addEventListener('pointermove', e => { if (e.pointerType === 'mouse') { tAz = (e.clientX / innerWidth - .5) * -.12; tEl = (e.clientY / innerHeight - .5) * .06; } });
+addEventListener('deviceorientation', e => { if (e.gamma != null) { tAz = Math.max(-1, Math.min(1, e.gamma / 30)) * -.08; tEl = Math.max(-1, Math.min(1, (e.beta - 45) / 30)) * .04; } });
+
+/* ================= Juego ================= */
+const $ = id => document.getElementById(id);
+const cardEl = $('card'), veil = $('veil'), stash = $('stash');
+let level = 'all', pool = [], current = null, state = 'idle';
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const refill = () => { pool = shuffle(CARDS.filter(c => level === 'all' || c.l == level)); };
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function render() {
+  if (!current) return;
+  $('c-kind').textContent = (current.k === 'V' ? 'Verdad' : 'Deseo') + ' · ' + NAMES[current.l];
+  $('c-text').textContent = plain(current.t);
+  $('c-foot').textContent = FOOT[current.k];
+  cardEl.dataset.l = current.l;
+}
+function updateCount() {}
+
+/* Pose final: carta grande, frente a la cámara, centrada */
+const restPos = new THREE.Vector3(), restQuat = new THREE.Quaternion();
+const fly = { from: null, to: null, t0: 0, dur: 1, dir: 1 };
+function frontPose() {
+  const vh = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+  const frac = Math.min(.56, (.78 * hero.clientWidth / hero.clientHeight) / (CW / CH));   // alto de la carta como fracción de la pantalla
+  const scale = 4;
+  const d = (CH * scale) / (frac * vh);
+  const p = camera.position.clone().add(camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(d));
+  p.add(new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion).multiplyScalar(d * vh * .03));
+  const q = camera.quaternion.clone().multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2));
+  return { p, q, s: scale, frac };
+}
+function settleOverlay() {
+  const f = frontPose();
+  const h = f.frac * hero.clientHeight;
+  stash.style.top = (innerHeight / 2 + h / 2 + 18) + 'px';
+}
+function draw() {
+  if (state !== 'idle') return;
+  if (scrollY > 2) { scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); setTimeout(draw, 450); return; }
+  if (!pool.length) refill();
+  current = pool.pop(); render(); updateCount();
+  state = 'loading';
+  const fontsReady = document.fonts ? Promise.race([
+    Promise.all([document.fonts.load('italic 600 90px "Cormorant Garamond"'), document.fonts.load('800 34px Manrope')]),
+    new Promise(r => setTimeout(r, 800))]) : Promise.resolve();
+  fontsReady.then(() => {
+    topFront.map.dispose(); topFront.map = frontTex(current); topFront.needsUpdate = true;
+    cardScene.attach(topCard);
+    restPos.copy(topCard.position); restQuat.copy(topCard.quaternion);
+    state = 'flying-up'; fly.t0 = performance.now(); fly.dur = reduce ? 1 : 1250; fly.dir = 1;
+    document.body.classList.add('playing');
+  });
+}
+function put() {
+  if (state !== 'up') return;
+  veil.classList.remove('on'); stash.classList.remove('on');
+  state = 'flying-down'; fly.t0 = performance.now(); fly.dur = reduce ? 1 : 950; fly.dir = -1;
+  document.body.classList.remove('playing');
+}
+const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const tmpQ = new THREE.Quaternion(), liftQ = new THREE.Quaternion();
+function animateCard(now) {
+  if (state !== 'flying-up' && state !== 'flying-down') return;
+  let t = Math.min(1, (now - fly.t0) / fly.dur);
+  const k = ease(fly.dir > 0 ? t : 1 - t);
+  const f = frontPose();
+  // trayectoria: sube primero, después viene hacia la cámara
+  const lift = restPos.clone().add(new THREE.Vector3(0, .16, 0));
+  const a = restPos.clone().lerp(lift, Math.min(1, k * 2.2));
+  const p = a.lerp(f.p, Math.max(0, (k - .2) / .8));
+  topCard.position.copy(p);
+  liftQ.copy(restQuat).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -.35));
+  if (k < .25) tmpQ.slerpQuaternions(restQuat, liftQ, k / .25); else tmpQ.slerpQuaternions(liftQ, f.q, (k - .25) / .75);
+  topCard.quaternion.copy(tmpQ);
+  topCard.scale.setScalar(1 + (f.s - 1) * Math.max(0, (k - .15) / .85));
+  dim = .8 * Math.max(0, (k - .2) / .8);
+  if (t >= 1) {
+    if (fly.dir > 0) {
+      state = 'up'; settleOverlay();
+      veil.classList.add('on'); stash.classList.add('on');
+      stash.focus({ preventScroll: true });
+    } else {
+      deck.attach(topCard); topCard.scale.setScalar(1); dim = 0;
+      state = 'idle';
+    }
+  }
+}
+
+/* Toque sobre el mazo */
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+let downAt = null;
+function setNdc(e) { const r = canvas.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); }
+canvas.addEventListener('pointerdown', e => { downAt = [e.clientX, e.clientY]; });
+canvas.addEventListener('pointerup', e => {
+  if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 8) return;
+  setNdc(e);
+  ray.setFromCamera(ndc, camera);
+  if (ray.intersectObjects([hit, ...deckCards], false).length) draw();
+});
+canvas.addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse' || state !== 'idle') return;
+  setNdc(e);
+  ray.setFromCamera(ndc, camera);
+  canvas.style.cursor = ray.intersectObjects([hit, ...deckCards], false).length ? 'pointer' : '';
+});
+$('draw-kb').addEventListener('click', draw);
+stash.addEventListener('click', put);
+veil.addEventListener('click', put);
+addEventListener('keydown', e => { if (e.key === 'Escape') put(); });
+document.querySelectorAll('.chip').forEach(chip => chip.addEventListener('click', () => {
+  level = chip.dataset.level;
+  document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'));
+  refill(); updateCount();
+}));
+refill(); updateCount();
+
+/* ================= Bucle ================= */
+let last = performance.now();
+function loop(now) {
+  requestAnimationFrame(loop);
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  if (!heroVisible && state === 'idle') return;
+  for (const c of candles) {
+    const f = reduce ? 1 : .86 + Math.sin(now / 90 + c.ph) * .05 + Math.sin(now / 37 + c.ph * 2) * .04 + Math.sin(now / 410 + c.ph) * .05;
+    c.light.intensity = c.base * f; c.halo.material.opacity = .65 + (f - .86) * 2.5;
+    c.flame.scale.set(1, f, 1); c.flame.rotation.z = reduce ? 0 : Math.sin(now / 160 + c.ph) * .08;
+  }
+  if (!reduce) { cAz += (tAz - cAz) * .04; cEl += (tEl - cEl) * .04; }
+  placeCamera();
+  animateCard(now);
+  if (state === 'up') { const f = frontPose(); topCard.position.copy(f.p); topCard.quaternion.copy(f.q); }
+  // anillo que invita a tocar el mazo
+  const pz = (Math.sin(now / 520) + 1) / 2;
+  ring.material.opacity = state === 'idle' ? .25 + pz * .45 : 0; ring.scale.setScalar(1 + pz * .18);
+  // brasa
+  const fl = .75 + Math.sin(now / 420) * .15 + Math.sin(now / 137) * .08;
+  ember.material.emissiveIntensity = 2 + fl * 1.5; emberLight.intensity = .18 * fl;
+  // humo
+  if (!reduce) {
+    ember.getWorldPosition(emberWorld);
+    for (const m of puffs) {
+      m.userData.t += dt;
+      const t = m.userData.t;
+      if (t < 0) { m.visible = false; continue; }
+      if (t > m.userData.life) { m.userData.t = 0; m.userData.ph = Math.random() * 6.28; m.userData.life = 3 + Math.random() * 1.4; m.rotation.set(Math.random() * 3, Math.random() * 3, 0); }
+      const ph = m.userData.ph || 0;
+      m.visible = true;
+      m.position.set(emberWorld.x + Math.sin(t * 1.3 + ph) * .02 * t + t * t * .006, emberWorld.y + .01 + t * .065, emberWorld.z + Math.cos(t * 1.1 + ph * 1.7) * .016 * t);
+      m.scale.setScalar(.6 + t * .9);
+      m.rotation.x += dt * .6; m.rotation.y += dt * .4;
+      m.material.opacity = Math.min(1, t / .4) * Math.max(0, 1 - t / m.userData.life) * .6;
+    }
+  }
+  renderer.clear();
+  renderer.render(scene, camera);
+  if (dim > .001) { dimMat.opacity = dim; renderer.render(dimScene, orthoCam); }
+  renderer.clearDepth();
+  renderer.render(cardScene, camera);
+}
+requestAnimationFrame(loop);
+{% endraw %}
+</script>
+
+{% schema %}
+{
+  "name": "Landing Verdad o Deseo",
+  "settings": [
+    { "type": "number", "id": "minutos", "label": "Minutos del contador de oferta", "default": 15 },
+    { "type": "text", "id": "codigo", "label": "Código de descuento de la oferta (solo PDF)", "default": "NOCHE50" },
+    { "type": "number", "id": "descuento", "label": "Porcentaje del código", "default": 50 }
+  ],
+  "presets": [{ "name": "Landing Verdad o Deseo" }]
+}
+{% endschema %}

@@ -1,8 +1,13 @@
 {
+  "layout": "landing",
   "sections": {
     "main": {
-      "type": "landing-disney-color",
-      "settings": {}
+      "type": "landing-verdad-o-deseo",
+      "settings": {
+        "minutos": 15,
+        "codigo": "NOCHE50",
+        "descuento": 50
+      }
     }
   },
   "order": ["main"]
