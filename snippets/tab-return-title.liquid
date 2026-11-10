@@ -1,0 +1,26 @@
+{%- comment -%}
+  Cambia el título de la pestaña cuando el visitante se va a otra pestaña
+  y lo restaura cuando vuelve. Los mensajes rotan cada 2 segundos.
+{%- endcomment -%}
+<script>
+  (function () {
+    var mensajes = ['¡Volvé! 😈', 'Te estamos esperando 🔥', '¿Verdad o Deseo? 💋', 'No te vayas... 👀'];
+    var tituloOriginal = document.title;
+    var intervalo = null;
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        tituloOriginal = document.title;
+        var i = 0;
+        document.title = mensajes[0];
+        intervalo = setInterval(function () {
+          i = (i + 1) % mensajes.length;
+          document.title = mensajes[i];
+        }, 2000);
+      } else {
+        clearInterval(intervalo);
+        document.title = tituloOriginal;
+      }
+    });
+  })();
+</script>
