@@ -1,0 +1,603 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  .dc-page{
+    --indigo-950:#1e1b4b;
+    --purple-900:#581c87;
+    --purple-950:#3b0764;
+    --purple-800:#6b21a8;
+    --amber-400:#fbbf24;
+    --amber-100:#fef3c7;
+    --orange-500:#f97316;
+    --slate-900:#0f172a;
+    --slate-50:#f8fafc;
+    --slate-200:#e2e8f0;
+    --slate-300:#cbd5e1;
+    --slate-400:#94a3b8;
+    --green-400:#4ade80;
+    --indigo-900:#312e81;
+    --indigo-100:#e0e7ff;
+    --white:#ffffff;
+    background:#fff;color:var(--slate-900);
+    font-family:'Poppins',Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  .dc-page *{box-sizing:border-box;}
+  .dc-page img,.dc-page svg{max-width:100%;display:block;}
+  .dc-page h1,.dc-page h2,.dc-page h3{
+    font-family:'Outfit',sans-serif;margin:0;text-wrap:balance;font-weight:800;
+  }
+  .dc-page p{margin:0;}
+  .dc-page a{color:inherit;text-decoration:none;}
+  .dc-page button{font-family:inherit;cursor:pointer;border:none;background:none;}
+  .dc-page ul{margin:0;padding:0;list-style:none;}
+
+  .dc-wrap{max-width:1120px;margin:0 auto;padding-left:20px;padding-right:20px;}
+  .dc-section{padding:38px 0;}
+  @media (min-width:750px){.dc-section{padding:52px 0;}}
+  .dc-section-dark{background:var(--slate-900);color:#fff;}
+  .dc-section-light{background:var(--slate-50);}
+  .dc-head{max-width:640px;margin:0 auto 22px;text-align:center;}
+  .dc-head h2{font-size:32px;line-height:1.2;text-align:center;}
+  .dc-head p{margin-top:12px;font-size:16px;line-height:1.6;color:var(--slate-400);text-align:center !important;}
+  .dc-section:not(.dc-section-dark) .dc-head p{color:#556;}
+
+  .ph{
+    background:#e4e7ed;border:1.5px dashed #a9b1bf;color:#5c6472;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-size:11.5px;font-weight:700;line-height:1.4;padding:10px;
+  }
+  .ph.ph-img{background:none;border:none;padding:0;overflow:hidden;}
+  .ph.ph-img img{width:100%;height:100%;object-fit:cover;display:block;}
+
+  .dc-btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:16px 28px;border-radius:14px;
+    font-family:'Outfit',sans-serif;font-size:15px;font-weight:800;
+    background:linear-gradient(90deg,var(--amber-400),var(--orange-500));
+    color:var(--indigo-950) !important;
+    box-shadow:0 10px 24px -8px rgba(249,115,22,.45);
+    transition:transform .2s ease,box-shadow .2s ease;
+    animation:dcPulse 2s ease-in-out infinite;
+  }
+  .dc-btn:hover{transform:scale(1.05);box-shadow:0 16px 30px -8px rgba(249,115,22,.55);animation-play-state:paused;}
+  .dc-btn:active{transform:scale(.95);}
+
+  @keyframes dcFadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes dcFadeDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes dcFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-15px);}}
+  @keyframes dcPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.03);}}
+  @media (prefers-reduced-motion:reduce){
+    .dc-btn{animation:none;}
+    .dc-hero-visual img{animation:none;}
+    .dc-hero-badge,.dc-hero h1,.dc-hero-sub,.dc-hero-audience,.dc-hero-chips,.dc-hero-visual,.dc-hero-cta,.dc-reveal{animation:none !important;opacity:1 !important;transform:none !important;}
+  }
+
+  /* ============ HERO ============ */
+  .dc-hero{
+    padding:40px 0 34px;color:#fff;text-align:center;
+    background:linear-gradient(160deg,var(--indigo-950) 0%,var(--purple-900) 55%,var(--purple-950) 100%);
+  }
+  @media (min-width:750px){.dc-hero{padding:56px 0 46px;}}
+  .dc-hero .dc-wrap{display:flex;flex-direction:column;align-items:center;}
+  .dc-hero-badge{
+    display:inline-flex;align-items:center;gap:6px;padding:7px 16px;margin-bottom:18px;
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:999px;
+    font-size:12.5px;font-weight:700;color:var(--amber-400);
+    animation:dcFadeDown .6s ease-out both;
+  }
+  .dc-hero h1{font-size:clamp(28px,5vw,44px);line-height:1.15;max-width:820px;width:100%;text-align:center !important;animation:dcFadeUp .6s .1s ease-out both;}
+  .dc-hero-sub{max-width:600px;width:100%;margin-top:18px;font-size:16px;line-height:1.6;color:var(--slate-300);text-align:center !important;animation:dcFadeUp .6s .2s ease-out both;}
+  .dc-hero-audience{max-width:560px;width:100%;margin-top:12px;font-size:13.5px;line-height:1.6;color:var(--slate-400);text-align:center !important;animation:dcFadeUp .6s .3s ease-out both;}
+  .dc-hero-chips{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:640px;width:100%;margin-top:26px;text-align:left;
+    animation:dcFadeUp .6s .4s ease-out both;
+  }
+  .dc-hero-chip{
+    display:flex;align-items:center;gap:9px;padding:11px 12px;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:12px;
+    font-size:12.5px;font-weight:600;color:#fff;
+  }
+  .dc-hero-chip svg{width:17px;height:17px;color:var(--amber-400);flex:none;}
+  .dc-hero-visual{margin-top:26px;max-width:560px;width:100%;animation:dcFadeUp .6s .5s ease-out both;}
+  .dc-hero-visual .ph{aspect-ratio:16/10;border-radius:20px;}
+  .dc-hero-visual img{animation:dcFloat 4s ease-in-out infinite;}
+  .dc-hero-cta{margin-top:24px;display:flex;flex-direction:column;align-items:center;animation:dcFadeUp .6s .6s ease-out both;}
+  .dc-hero-price{margin-top:14px;font-size:13px;color:var(--slate-400);text-align:center !important;}
+  .dc-hero-price strong{color:#fff;font-size:15px;}
+  .dc-hero-price del{color:var(--slate-400);opacity:.7;margin-right:4px;}
+
+  @media (min-width:750px){
+    .dc-hero-chips{max-width:720px;}
+  }
+
+  /* ============ EMPATIA ============ */
+  .dc-empathy-grid{display:grid;gap:32px;align-items:center;}
+  .dc-empathy-visual .ph{aspect-ratio:4/3;border-radius:18px;}
+  .dc-empathy-copy ul{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .dc-empathy-copy li{display:flex;gap:9px;align-items:center;font-size:15px;font-weight:600;color:var(--slate-900);}
+  .dc-empathy-copy li svg{width:19px;height:19px;color:#4f46e5;flex:none;}
+  .dc-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}
+  .dc-tag{background:var(--indigo-100);color:#4338ca;font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;}
+  @media (min-width:750px){.dc-empathy-grid{grid-template-columns:1fr 1fr;}}
+
+  /* ============ QUE RECIBES ============ */
+  .dc-includes-grid{display:grid;gap:32px;align-items:start;}
+  .dc-includes-list{display:flex;flex-direction:column;gap:12px;margin-top:18px;}
+  .dc-includes-list li{display:flex;gap:10px;align-items:flex-start;font-size:15px;color:var(--slate-900);}
+  .dc-includes-list li svg{width:19px;height:19px;color:var(--green-400);flex:none;margin-top:1px;}
+  .dc-includes-note{margin-top:18px;padding:16px;background:var(--amber-100);border-radius:14px;font-size:13.5px;color:#7c4a03;line-height:1.6;}
+  .dc-includes-gallery{display:grid;grid-template-columns:1fr 1fr;gap:12px;order:-1;}
+  .dc-includes-gallery .ph{aspect-ratio:3/4;border-radius:14px;}
+  .dc-includes-gallery .ph:first-child{grid-column:1/-1;aspect-ratio:16/10;}
+  @media (min-width:750px){.dc-includes-grid{grid-template-columns:1fr 1fr;}.dc-includes-gallery{order:2;}}
+
+  /* ============ MIRA POR DENTRO (marquee) ============ */
+  .dc-preview-slider{overflow:hidden;margin-top:8px;}
+  .dc-preview-track{display:flex;width:max-content;gap:14px;animation:dcPreviewMove 32s linear infinite;}
+  .dc-preview-slider:hover .dc-preview-track{animation-play-state:paused;}
+  .dc-preview-group{display:flex;flex-shrink:0;gap:14px;}
+  .dc-preview-card{flex:0 0 auto;width:200px;}
+  .dc-preview-card .ph{aspect-ratio:3/4;border-radius:14px;}
+  @keyframes dcPreviewMove{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* ============ PROBLEMA / SOLUCION ============ */
+  .dc-problem-grid{display:grid;gap:16px;margin-top:24px;}
+  .dc-problem-card{background:#fff;border:1px solid var(--slate-200);border-radius:16px;padding:22px;}
+  .dc-solution-card{background:linear-gradient(135deg,var(--indigo-950),var(--purple-900));color:#fff;border-radius:16px;padding:22px;}
+  .dc-problem-card h3,.dc-solution-card h3{font-size:16px;margin-bottom:12px;}
+  .dc-solution-card h3{color:var(--amber-400);}
+  .dc-problem-list,.dc-solution-list{display:flex;flex-direction:column;gap:9px;}
+  .dc-problem-list li{display:flex;gap:8px;font-size:13.5px;color:var(--slate-900);}
+  .dc-problem-list li svg{width:16px;height:16px;color:#ef4444;flex:none;margin-top:2px;}
+  .dc-solution-list li{font-size:13.5px;color:var(--slate-200);line-height:1.6;}
+  @media (min-width:750px){.dc-problem-grid{grid-template-columns:1fr 1fr;}}
+
+  /* ============ BONOS ============ */
+  .dc-bonus-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+  .dc-bonus-card{background:#fff;border:1px solid var(--slate-200);border-radius:16px;overflow:hidden;box-shadow:0 10px 24px -18px rgba(15,23,42,.2);}
+  .dc-bonus-card .ph{aspect-ratio:4/3;}
+  .dc-bonus-body{padding:14px;}
+  .dc-bonus-body h3{font-size:13.5px;line-height:1.3;margin-bottom:6px;}
+  .dc-bonus-body p{font-size:12px;color:var(--slate-400);line-height:1.5;}
+  @media (min-width:750px){.dc-bonus-grid{grid-template-columns:repeat(3,1fr);}.dc-bonus-grid>:last-child{grid-column:2;}}
+  @media (min-width:750px) and (max-width:1000px){.dc-bonus-grid{grid-template-columns:repeat(2,1fr);}.dc-bonus-grid>:last-child{grid-column:auto;}}
+
+  /* ============ OFERTA UNICA ============ */
+  .dc-offer{
+    max-width:520px;margin:0 auto;text-align:center;padding:36px 26px;border-radius:24px;color:#fff;
+    background:linear-gradient(160deg,var(--indigo-950),var(--purple-900) 60%,var(--purple-950));
+    box-shadow:0 30px 60px -20px rgba(59,7,100,.4);
+  }
+  .dc-offer-badge{display:inline-block;background:var(--amber-400);color:var(--indigo-950);font-size:12px;font-weight:800;padding:6px 14px;border-radius:999px;margin-bottom:16px;}
+  .dc-offer h3{font-size:24px;color:#fff;text-align:center !important;}
+  .dc-offer-price{font-family:'Outfit';font-size:52px;font-weight:900;color:var(--amber-400);margin:16px 0 6px;text-align:center !important;}
+  .dc-offer-price span{font-size:16px;color:var(--slate-300);font-weight:600;}
+  .dc-offer-compare{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;}
+  .dc-offer-was{font-size:18px;color:var(--slate-300);text-decoration:line-through;opacity:.7;}
+  .dc-offer-off{background:rgba(74,222,128,.15);color:var(--green-400);font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;}
+  .dc-offer-list{text-align:left;display:flex;flex-direction:column;gap:9px;margin:22px 0;}
+  .dc-offer-list li{display:flex;gap:8px;font-size:13.5px;color:var(--slate-200);}
+  .dc-offer-list li svg{width:17px;height:17px;color:var(--green-400);flex:none;margin-top:1px;}
+  .dc-offer .dc-btn{width:100%;}
+  .dc-offer-note{margin-top:14px;font-size:12px;color:var(--slate-400);text-align:center !important;}
+
+  /* ============ TESTIMONIOS ============ */
+  .dc-testi-grid{display:grid;gap:16px;}
+  .dc-testi-card{background:#fff;border:1px solid var(--slate-200);border-radius:16px;padding:20px;}
+  .dc-testi-stars{color:var(--amber-400);font-size:14px;letter-spacing:1px;margin-bottom:10px;}
+  .dc-testi-quote{font-size:14px;line-height:1.6;color:var(--slate-900);}
+  .dc-testi-author{display:flex;align-items:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--slate-200);}
+  .dc-testi-author .ph{width:42px;height:42px;border-radius:50%;flex:none;font-size:8px;}
+  .dc-testi-name{font-size:13px;font-weight:700;}
+  .dc-testi-role{font-size:11.5px;color:var(--slate-400);}
+  @media (min-width:750px){.dc-testi-grid{grid-template-columns:repeat(3,1fr);}}
+
+  /* ============ GARANTIA ============ */
+  .dc-guarantee{
+    max-width:640px;margin:0 auto;text-align:center;padding:36px 24px;border-radius:22px;
+    background:var(--amber-100);
+  }
+  .dc-guarantee svg{width:52px;height:52px;color:var(--orange-500);margin:0 auto 14px;}
+  .dc-guarantee h3{font-size:26px;color:#7c4a03;text-align:center !important;}
+  .dc-guarantee p{margin-top:12px;font-size:14px;line-height:1.6;color:#8a5a10;text-align:center !important;}
+
+  /* ============ COMO FUNCIONA ============ */
+  .dc-steps{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:8px;}
+  .dc-step{text-align:center;padding:20px 14px;background:#fff;border:1px solid var(--slate-200);border-radius:16px;}
+  .dc-step p{text-align:center !important;}
+  .dc-step-num{
+    width:38px;height:38px;border-radius:50%;background:var(--indigo-100);color:#4338ca;
+    display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-family:'Outfit';font-weight:800;
+  }
+  .dc-step p{font-size:13.5px;font-weight:600;color:var(--slate-900);}
+  @media (min-width:750px){.dc-steps{grid-template-columns:repeat(4,1fr);}}
+
+  /* ============ FAQ ============ */
+  .dc-faq-item{border-bottom:1px solid var(--slate-200);}
+  .dc-faq-item:first-child{border-top:1px solid var(--slate-200);}
+  .dc-faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 6px;font-size:15px;font-weight:700;color:var(--slate-900);text-align:left;}
+  .dc-faq-q svg{width:18px;height:18px;flex:none;color:var(--slate-400);transition:transform .2s ease;}
+  .dc-faq-item[data-open="true"] .dc-faq-q svg{transform:rotate(45deg);}
+  .dc-faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .dc-faq-a p{font-size:14px;line-height:1.6;color:var(--slate-400);padding:0 6px 18px;}
+
+  /* ============ CTA FINAL ============ */
+  .dc-cta-final{
+    text-align:center;color:#fff;
+    background:linear-gradient(160deg,var(--indigo-950),var(--purple-900));
+  }
+  .dc-cta-final h2{color:#fff;font-size:30px;max-width:520px;margin:0 auto;text-align:center !important;}
+  .dc-cta-final-visual{max-width:420px;margin:26px auto;}
+  .dc-cta-final-visual .ph{aspect-ratio:4/3;border-radius:18px;}
+
+  footer.dc-footer{padding:26px 0;border-top:1px solid var(--slate-200);text-align:center;}
+  footer.dc-footer p{font-size:11.5px;color:var(--slate-400);max-width:560px;margin:0 auto;line-height:1.6;text-align:center !important;}
+
+  .dc-reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease;}
+  .dc-reveal.dc-in{opacity:1;transform:translateY(0);}
+  .dc-reveal.dc-in:nth-child(2){transition-delay:.08s;}
+  .dc-reveal.dc-in:nth-child(3){transition-delay:.16s;}
+  .dc-reveal.dc-in:nth-child(4){transition-delay:.24s;}
+  .dc-reveal.dc-in:nth-child(5){transition-delay:.32s;}
+  .dc-reveal.dc-in:nth-child(6){transition-delay:.4s;}
+  @media (prefers-reduced-motion:reduce){.dc-reveal{opacity:1;transform:none;transition:none;}}
+</style>
+
+<div class="dc-page">
+
+  <!-- HERO -->
+  <section class="dc-hero">
+    <div class="dc-wrap">
+      <span class="dc-hero-badge">✨ Disney Color PRO</span>
+      <h1>Para quienes aman Disney, colorear y tener actividades creativas listas en casa</h1>
+      <p class="dc-hero-sub">Obtén +100 libros coloreables Disney con más de 11.700 páginas listas para imprimir, para colorear en iPad y tablets o disfrutar cuando quieras.</p>
+      <p class="dc-hero-audience">Perfecto para niños, adultos, fans de Disney, familias, docentes, cuidadores o cualquier persona que disfrute pintar y crear momentos mágicos en casa.</p>
+
+      <div class="dc-hero-chips">
+        <div class="dc-hero-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>Personajes Disney favoritos</div>
+        <div class="dc-hero-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>Descarga inmediata.</div>
+        <div class="dc-hero-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><rect x="6" y="14" width="12" height="8"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/></svg>Impresiones sin límites.</div>
+        <div class="dc-hero-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Comunidad privada incluida.</div>
+        <div class="dc-hero-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg>PDF's originales NO escaneados.</div>
+        <div class="dc-hero-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M12 14v4M10 16h4"/></svg>Libros nuevos todas las semanas.</div>
+      </div>
+
+      <div class="dc-hero-visual">
+        <div class="ph ph-img">
+          <picture>
+            <source media="(min-width:768px)" srcset="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/Imagen_Header_1.png?v=1789648579">
+            <img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/Imagen_Header_2.png?v=1789648579" alt="Colección de libros para colorear Disney">
+          </picture>
+        </div>
+      </div>
+
+      <div class="dc-hero-cta">
+        <a href="https://pbftrv-ac.myshopify.com/cart/add?id=50583280025817&quantity=1&return_to=/checkout" class="dc-btn js-buy">QUIERO MI DISNEY COLOR PRO</a>
+        <p class="dc-hero-price"><del>$25.999</del> Acceso hoy por solo <strong>$20.999</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- EMPATIA -->
+  <section class="dc-section">
+    <div class="dc-wrap dc-empathy-grid">
+      <div class="dc-empathy-visual">
+        <div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/nenapintando.png?v=1789648579" alt="Niña coloreando tranquila en casa"></div>
+      </div>
+      <div class="dc-empathy-copy">
+        <h2 style="font-size:26px;">A veces solo quieres desconectarte, colorear y disfrutar algo simple</h2>
+        <p style="margin-top:12px;font-size:15px;color:var(--slate-400);line-height:1.6;">Puede ser para relajarte después de un día largo, compartir un momento en familia, entretener a los niños, preparar un regalo creativo o simplemente volver a disfrutar la magia Disney desde casa.</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Sin buscar dibujos sueltos.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Sin esperar envíos.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Sin complicarte.</li>
+        </ul>
+        <div class="dc-tags">
+          <span class="dc-tag">Fans de Disney</span>
+          <span class="dc-tag">Niños y adultos</span>
+          <span class="dc-tag">Momentos de relajación</span>
+          <span class="dc-tag">Actividades en familia</span>
+          <span class="dc-tag">Tardes sin pantallas</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUE RECIBES -->
+  <section class="dc-section dc-section-light">
+    <div class="dc-wrap dc-includes-grid">
+      <div>
+        <span style="color:var(--orange-500);font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;">Calidad premium</span>
+        <h2 style="font-size:28px;margin-top:8px;">¿Qué recibes en Disney Color PRO?</h2>
+        <p style="margin-top:10px;font-size:15px;color:#556;">Al elegir el pack completo recibes todo esto:</p>
+        <ul class="dc-includes-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Más de 100 libros para colorear de Disney.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Más de 11.700 páginas de alta calidad.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Personajes Disney favoritos.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Descarga inmediata.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Impresiones sin límites.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Comunidad privada.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Libros nuevos todas las semanas.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Actualizaciones incluidas.</li>
+        </ul>
+        <div class="dc-includes-note">Puedes imprimir tus páginas favoritas todas las veces que quieras. Si quieres pintar en un iPad o tablet, también podrás usarlo en tablets o iPads. Si quieres compartirla con niños, amigos o familia, imprimes varias copias. Si quieres armar un cuaderno personalizado, eliges tus páginas favoritas y listo.</div>
+      </div>
+      <div class="dc-includes-gallery">
+        <div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/dibujosiendoimpreso.png?v=1789648579" alt="Lámina para colorear Disney recién impresa"></div>
+        <div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/Libro_coloreado_abierto.jpg?v=1789649679" alt="Libro Disney coloreado con marcadores"></div>
+        <div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/Table_con_app_abierta.jpg?v=1789649679" alt="Coloreando en tablet con lápiz óptico"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MIRA LO QUE RECIBES POR DENTRO -->
+  <section class="dc-section">
+    <div class="dc-wrap">
+      <div class="dc-head dc-reveal">
+        <h2 style="font-size:26px;">Mira lo que recibes por dentro</h2>
+        <p>La biblioteca está organizada para que puedas encontrar, descargar e imprimir tus libros de forma sencilla.</p>
+      </div>
+      <div class="dc-preview-slider">
+        <div class="dc-preview-track">
+          <div class="dc-preview-group">
+            <div class="dc-preview-card"><div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/Biblioteca.jpg?v=1789649769" alt="Biblioteca de libros para colorear"></div></div>
+            <div class="dc-preview-card"><div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/Libro_disnet_coloreado.jpg?v=1789648578" alt="Libro Disney coloreado con marcadores"></div></div>
+            <div class="dc-preview-card"><div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/dibujosiendoimpreso.png?v=1789648579" alt="Página lista para imprimir"></div></div>
+            <div class="dc-preview-card"><div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/nene_usando_la_app.jpg?v=1789649679" alt="Niño coloreando en tablet"></div></div>
+          </div>
+          <div class="dc-preview-group" aria-hidden="true">
+            <div class="dc-preview-card"><div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/Biblioteca.jpg?v=1789649769" alt="Biblioteca de libros para colorear"></div></div>
+            <div class="dc-preview-card"><div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/Libro_disnet_coloreado.jpg?v=1789648578" alt="Libro Disney coloreado con marcadores"></div></div>
+            <div class="dc-preview-card"><div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/dibujosiendoimpreso.png?v=1789648579" alt="Página lista para imprimir"></div></div>
+            <div class="dc-preview-card"><div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/nene_usando_la_app.jpg?v=1789649679" alt="Niño coloreando en tablet"></div></div>
+          </div>
+        </div>
+      </div>
+      <p style="text-align:center;margin-top:16px;font-size:13px;color:var(--slate-400);">Así sabes exactamente lo que recibes antes de comprar.</p>
+    </div>
+  </section>
+
+  <!-- PROBLEMA / SOLUCION -->
+  <section class="dc-section dc-section-light">
+    <div class="dc-wrap">
+      <div class="dc-head dc-reveal"><h2 style="font-size:26px;">No pierdas más tiempo buscando dibujos sueltos</h2></div>
+      <p style="text-align:center;font-size:14.5px;color:#556;">Sí, podrías buscar dibujos para colorear en internet. Pero muchas veces pasa esto:</p>
+      <div class="dc-problem-grid">
+        <div class="dc-problem-card dc-reveal">
+          <h3>El problema</h3>
+          <ul class="dc-problem-list">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>Pierdes tiempo buscando uno por uno.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>Algunos salen borrosos.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>Otros no se imprimen bien.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>Muchos no están organizados.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>No encuentras suficiente variedad.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>Terminas usando siempre los mismos dibujos.</li>
+          </ul>
+        </div>
+        <div class="dc-solution-card dc-reveal">
+          <h3>La solución</h3>
+          <ul class="dc-solution-list">
+            <li>Con Disney Color PRO tienes una biblioteca lista para esos momentos. Solo eliges un libro, imprimes tus páginas favoritas y empiezas a colorear.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BONOS -->
+  <section class="dc-section">
+    <div class="dc-wrap">
+      <div class="dc-head dc-reveal">
+        <h2 style="font-size:26px;">Además de los libros Disney, recibes una biblioteca extra de actividades infantiles</h2>
+      </div>
+      <div class="dc-bonus-grid">
+        <div class="dc-bonus-card dc-reveal">
+          <div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/bono1.png?v=1789648579" alt="Bono Mega Universo Papercraft"></div>
+          <div class="dc-bonus-body"><h3>Bono #1: Mega Universo Papercraft</h3><p>Manualidades imprimibles para armar y jugar.</p></div>
+        </div>
+        <div class="dc-bonus-card dc-reveal">
+          <div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/bono2.png?v=1789648579" alt="Bono Mega Kit Rutinas Visuales PRO"></div>
+          <div class="dc-bonus-body"><h3>Bono #2: Mega Kit Rutinas Visuales PRO</h3><p>Recursos visuales para organizar el día a día.</p></div>
+        </div>
+        <div class="dc-bonus-card dc-reveal">
+          <div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/bono3.png?v=1789648579" alt="Bono Cuadernillos Didácticos Infantiles"></div>
+          <div class="dc-bonus-body"><h3>Bono #3: +500 Cuadernillos Didácticos Infantiles</h3><p>Recursos imprimibles para reforzar el aprendizaje.</p></div>
+        </div>
+        <div class="dc-bonus-card dc-reveal">
+          <div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/bono4.png?v=1789648579" alt="Bono Juegos de Mesa Imprimibles"></div>
+          <div class="dc-bonus-body"><h3>Bono #4: +300 Juegos de Mesa Imprimibles</h3><p>Juegos listos para imprimir y disfrutar en familia.</p></div>
+        </div>
+        <div class="dc-bonus-card dc-reveal">
+          <div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/bono5.png?v=1789648579" alt="Bono Actividades Bíblicas para Niños"></div>
+          <div class="dc-bonus-body"><h3>Bono #5: Actividades Bíblicas para Niños</h3><p>Recursos imprimibles para enseñar historias, valores y actividades de fe de forma creativa.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OFERTA UNICA -->
+  <section class="dc-section dc-section-dark" id="oferta">
+    <div class="dc-wrap">
+      <div class="dc-offer dc-reveal">
+        <span class="dc-offer-badge">ACCESO COMPLETO</span>
+        <h3>Disney Color PRO</h3>
+        <div class="dc-offer-compare"><span class="dc-offer-was">$25.999</span><span class="dc-offer-off">19% OFF</span></div>
+        <div class="dc-offer-price">$20.999<span> ARS · pago único</span></div>
+        <ul class="dc-offer-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Más de 100 libros para colorear de Disney</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Más de 11.700 páginas imprimibles</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Descarga inmediata, impresiones sin límites</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Comunidad privada + libros nuevos cada semana</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Los 5 bonos especiales incluidos</li>
+        </ul>
+        <a href="https://pbftrv-ac.myshopify.com/cart/add?id=50583280025817&quantity=1&return_to=/checkout" class="dc-btn js-buy">QUIERO MI DISNEY COLOR PRO</a>
+        <p class="dc-offer-note">Recibes el acceso de forma inmediata después de la compra.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIOS -->
+  <section class="dc-section dc-section-light">
+    <div class="dc-wrap">
+      <div class="dc-head dc-reveal"><h2 style="font-size:26px;">Familias que ya están usando Disney Color PRO</h2></div>
+      <div class="dc-testi-grid">
+        <div class="dc-testi-card dc-reveal">
+          <div class="dc-testi-stars">★★★★★</div>
+          <p class="dc-testi-quote">"Me encantó que todo estuviera organizado. Mi hija eligió sus personajes favoritos y en minutos ya estaba coloreando."</p>
+          <div class="dc-testi-author">
+            <div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/nenaconmadrepintando.png?v=1789648578" alt="Marta R."></div>
+            <div><div class="dc-testi-name">Marta R.</div><div class="dc-testi-role">mamá de una niña de 7 años</div></div>
+          </div>
+        </div>
+        <div class="dc-testi-card dc-reveal">
+          <div class="dc-testi-stars">★★★★★</div>
+          <p class="dc-testi-quote">"Antes buscaba dibujos en internet y muchos salían borrosos. Estos se imprimen muy bien y hay muchísima variedad."</p>
+          <div class="dc-testi-author">
+            <div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/chica_sosteniendo_libro_coloreado.jpg?v=1789648578" alt="Sofia C."></div>
+            <div><div class="dc-testi-name">Sofia C.</div><div class="dc-testi-role">tía de una niña de 8 años</div></div>
+          </div>
+        </div>
+        <div class="dc-testi-card dc-reveal">
+          <div class="dc-testi-stars">★★★★★</div>
+          <p class="dc-testi-quote">"Me sirvió muchísimo para vacaciones. Imprimía varias páginas cada día y los niños felices."</p>
+          <div class="dc-testi-author">
+            <div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/Neneconmadre.png?v=1789648579" alt="Alexa O."></div>
+            <div><div class="dc-testi-name">Alexa O.</div><div class="dc-testi-role">mamá de un niño de 6 años</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GARANTIA -->
+  <section class="dc-section">
+    <div class="dc-wrap">
+      <div class="dc-guarantee dc-reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+        <h3>60 DÍAS DE GARANTÍA</h3>
+        <p>Si no te gustó nada de lo que compraste, con un solo clic te devolvemos tu dinero y lo tendrás de forma inmediata en tu bolsillo nuevamente.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="dc-section dc-section-light">
+    <div class="dc-wrap">
+      <div class="dc-head dc-reveal">
+        <h2 style="font-size:26px;">Es más simple de lo que crees</h2>
+        <p>De la pantalla a la mesa en cuestión de minutos.</p>
+      </div>
+      <div class="dc-steps">
+        <div class="dc-step dc-reveal"><div class="dc-step-num">1</div><p>Elige tu pack.</p></div>
+        <div class="dc-step dc-reveal"><div class="dc-step-num">2</div><p>Realiza tu compra segura.</p></div>
+        <div class="dc-step dc-reveal"><div class="dc-step-num">3</div><p>Recibe el acceso de inmediato.</p></div>
+        <div class="dc-step dc-reveal"><div class="dc-step-num">4</div><p>Descarga los libros que quieras.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="dc-section">
+    <div class="dc-wrap" style="max-width:720px;">
+      <div class="dc-head dc-reveal" style="text-align:left;margin-left:0;">
+        <h2 style="font-size:26px;">Preguntas frecuentes</h2>
+      </div>
+      <div class="dc-faq-list">
+        <div class="dc-faq-item dc-reveal">
+          <button class="dc-faq-q" type="button">¿Es un producto físico?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+          <div class="dc-faq-a"><p>No. Es un producto 100% digital. Recibirás acceso para descargar e imprimir los archivos.</p></div>
+        </div>
+        <div class="dc-faq-item dc-reveal">
+          <button class="dc-faq-q" type="button">¿Cuándo recibo mi acceso?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+          <div class="dc-faq-a"><p>De forma inmediata después de la compra.</p></div>
+        </div>
+        <div class="dc-faq-item dc-reveal">
+          <button class="dc-faq-q" type="button">¿Puedo imprimir varias veces?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+          <div class="dc-faq-a"><p>Sí. Puedes imprimir tus páginas favoritas todas las veces que quieras.</p></div>
+        </div>
+        <div class="dc-faq-item dc-reveal">
+          <button class="dc-faq-q" type="button">¿Incluye personajes Disney?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+          <div class="dc-faq-a"><p>Sí. La colección incluye libros para colorear con personajes Disney.</p></div>
+        </div>
+        <div class="dc-faq-item dc-reveal">
+          <button class="dc-faq-q" type="button">¿Es un producto con licencia Disney?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+          <div class="dc-faq-a"><p>Sí. Es un producto con licencia Disney.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="dc-section dc-cta-final">
+    <div class="dc-wrap">
+      <h2>Ten Disney listo para colorear cuando quieras</h2>
+      <div class="dc-cta-final-visual"><div class="ph ph-img"><img src="https://cdn.shopify.com/s/files/1/0834/7418/6457/files/Imagen_Header_2.png?v=1789648579" alt="Colección Disney Color PRO"></div></div>
+      <a href="https://pbftrv-ac.myshopify.com/cart/add?id=50583280025817&quantity=1&return_to=/checkout" class="dc-btn js-buy">QUIERO MI DISNEY COLOR PRO</a>
+      <p class="dc-hero-price" style="margin-top:16px;"><del>$25.999</del> Acceso hoy por solo <strong>$20.999</strong></p>
+    </div>
+  </section>
+
+  <footer class="dc-footer">
+    <div class="dc-wrap">
+      <p>Producto digital independiente. No afiliado, patrocinado ni respaldado por Disney ni por sus marcas registradas. Material inspirado en personajes y estilos de fantasía para actividades creativas infantiles.</p>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  document.querySelectorAll('.dc-faq-q').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var item = btn.closest('.dc-faq-item');
+      var answer = item.querySelector('.dc-faq-a');
+      var isOpen = item.getAttribute('data-open') === 'true';
+      document.querySelectorAll('.dc-faq-item').forEach(function(i){
+        i.setAttribute('data-open','false');
+        i.querySelector('.dc-faq-a').style.maxHeight = null;
+      });
+      if(!isOpen){
+        item.setAttribute('data-open','true');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+      }
+    });
+  });
+
+  document.querySelectorAll('.js-buy').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      fetch('/cart/clear.js', { method: 'POST' })
+        .then(function(){
+          return fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: [{ id: 50583280025817, quantity: 1 }] })
+          });
+        })
+        .then(function(){ window.location.href = '/checkout'; })
+        .catch(function(){ window.location.href = btn.href; });
+    });
+  });
+
+  if ('IntersectionObserver' in window) {
+    var dcObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) {
+          entry.target.classList.add('dc-in');
+          dcObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.dc-reveal').forEach(function(el){ dcObserver.observe(el); });
+  } else {
+    document.querySelectorAll('.dc-reveal').forEach(function(el){ el.classList.add('dc-in'); });
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Landing Disney Color",
+  "settings": []
+}
+{% endschema %}
