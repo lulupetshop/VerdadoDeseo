@@ -46,7 +46,7 @@ El PDF principal no lleva precio tachado: el 50 % off ($18.750) lo aplica el có
 
 - [ ] Archivos PDF y entrega por mail (los carga el dueño).
 - [x] Mazo físico creado: $48.990 (tachado $72.990), stock 50, envío desde el 10/12.
-- [ ] Envío gratis: hoy Shopify cobra $5.555 en Argentina y $29.000 internacional. Hay que poner la tarifa nacional en $0 (y decidir qué hacer con la internacional).
+- [x] Envío: "Envío gratis" a $0 en Argentina; envío internacional desactivado (10/11/2026).
 - [ ] Publicar el tema `VerdadoDeseo/main` (lo hace el dueño).
 - [ ] Nombre de la tienda (lo cambia el dueño).
 - [ ] Pasar los 5 productos a activo y publicarlos en la tienda online antes del lanzamiento.
