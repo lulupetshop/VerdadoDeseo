@@ -43,7 +43,7 @@ Tres escenas pensadas para que la carta ocupe más lugar y el texto se lea en el
 En ChatGPT, adjuntar `dorso.svg` exportado a PNG y pegar esto antes de la escena:
 
 ```
-Generá una fotografía realista en formato vertical 4:5. Te adjunto el dorso de las cartas de mi marca: usá exactamente ese diseño (bordó, rombos dorados y monograma V·D en un círculo) en el dorso del mazo, sin cambiar las letras ni agregar ornamentos. La carta protagonista tiene que quedar completamente en blanco, sin texto ni dibujos: el texto lo agrego yo después. No incluyas ningún otro texto, logo ni marca de agua. Escena:
+Generá una fotografía realista en formato vertical 4:5. Te adjunto el dorso de las cartas de mi marca: usá exactamente ese diseño (bordó liso con el monograma V·D dorado en el centro) en el dorso del mazo, sin cambiar las letras ni agregar marcos ni ornamentos. La carta protagonista tiene que quedar completamente en blanco, sin texto ni dibujos: el texto lo agrego yo después. No incluyas ningún otro texto, logo ni marca de agua. Escena:
 ```
 
 ### A · Primer plano de frente
