@@ -35,3 +35,31 @@ Variante sin mano (más fácil de componer):
 ```
 Fotografía de producto cinematográfica, vista cenital: una sola carta de juego vertical, completamente en blanco, color rosa crema muy claro con un borde fino bordó, sin ningún texto ni dibujo, apoyada plana y derecha en el centro de una mesa de madera oscura. Alrededor, un mazo de cartas bordó con filete dorado, dos copas de vino tinto y una vela encendida. Luz cálida de vela, penumbra, fondo negro y bordó profundo, reflejos dorados suaves, ambiente íntimo y elegante estilo noir, grano fino de película, alta resolución.
 ```
+
+## Otros ángulos
+
+Tres escenas pensadas para que la carta ocupe más lugar y el texto se lea en el celular. Sirven igual en Firefly y en ChatGPT. Proporción 4:5 en todas.
+
+En ChatGPT, adjuntar `dorso.svg` exportado a PNG y pegar esto antes de la escena:
+
+```
+Generá una fotografía realista en formato vertical 4:5. Te adjunto el dorso de las cartas de mi marca: usá exactamente ese diseño (bordó, rombos dorados y monograma V·D en un círculo) en el dorso del mazo, sin cambiar las letras ni agregar ornamentos. La carta protagonista tiene que quedar completamente en blanco, sin texto ni dibujos: el texto lo agrego yo después. No incluyas ningún otro texto, logo ni marca de agua. Escena:
+```
+
+### A · Primer plano de frente
+
+```
+Fotografía cinematográfica en clave baja, estilo claroscuro, primer plano a la altura de los ojos. Una mano adulta sostiene una sola carta de juego vertical, de frente a la cámara, perfectamente plana y derecha, que ocupa casi la mitad del encuadre. La carta está completamente en blanco, color rosa crema muy claro con un borde fino bordó, sin ningún texto ni dibujo. Los dedos la sujetan solo por el borde inferior, sin tapar el centro. La única fuente de luz es la llama de una vela, fuera de foco a un costado, que ilumina de lleno la carta con luz cálida y dorada. Detrás, muy desenfocados, una copa de vino tinto y un mazo de cartas de dorso bordó liso con filete dorado fino. Fondo negro puro, sin luz ambiente, contraste alto, sombras densas, lente de 85 mm, poca profundidad de campo, grano fino de película, alta resolución.
+```
+
+### B · Carta apoyada en el mazo, sin manos
+
+```
+Fotografía de producto cinematográfica en clave baja, estilo claroscuro, cámara a la altura de la mesa. Una sola carta de juego vertical está parada, apoyada contra un mazo de cartas de dorso bordó liso con filete dorado fino, de frente a la cámara, plana y derecha, en el centro del encuadre y ocupando casi la mitad de la imagen. La carta está completamente en blanco, color rosa crema muy claro con un borde fino bordó, sin ningún texto ni dibujo, y nada la tapa. A un costado, una vela encendida es la única fuente de luz: ilumina la carta con luz cálida y dorada y deja reflejos en dos copas de vino tinto desenfocadas al fondo. Mesa de madera casi negra, fondo negro puro, sin luz ambiente, contraste alto, sombras densas, lente de 85 mm, poca profundidad de campo, grano fino de película, alta resolución. Sin personas ni manos.
+```
+
+### C · Cenital, las dos manos de la pareja
+
+```
+Fotografía cinematográfica en clave baja, estilo claroscuro, vista cenital exacta desde arriba. En el centro de una mesa de madera casi negra hay una sola carta de juego vertical, apoyada plana y derecha, que ocupa un tercio del encuadre. La carta está completamente en blanco, color rosa crema muy claro con un borde fino bordó, sin ningún texto ni dibujo, y nada la tapa. Desde lados opuestos de la mesa entran dos manos adultas, una de cada persona, que rozan apenas los bordes de la carta sin cubrirla. Alrededor, un mazo de cartas de dorso bordó liso con filete dorado fino, dos copas de vino tinto y una vela encendida que es la única fuente de luz: luz cálida y dorada sobre la carta y las manos, el resto en sombra profunda. Fondo negro, sin luz ambiente, contraste alto, grano fino de película, alta resolución.
+```
