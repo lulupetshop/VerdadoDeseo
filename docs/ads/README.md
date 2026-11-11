@@ -63,3 +63,13 @@ Fotografía de producto cinematográfica en clave baja, estilo claroscuro, cáma
 ```
 Fotografía cinematográfica en clave baja, estilo claroscuro, vista cenital exacta desde arriba. En el centro de una mesa de madera casi negra hay una sola carta de juego vertical, apoyada plana y derecha, que ocupa un tercio del encuadre. La carta está completamente en blanco, color rosa crema muy claro con un borde fino bordó, sin ningún texto ni dibujo, y nada la tapa. Desde lados opuestos de la mesa entran dos manos adultas, una de cada persona, que rozan apenas los bordes de la carta sin cubrirla. Alrededor, un mazo de cartas de dorso bordó liso con filete dorado fino, dos copas de vino tinto y una vela encendida que es la única fuente de luz: luz cálida y dorada sobre la carta y las manos, el resto en sombra profunda. Fondo negro, sin luz ambiente, contraste alto, grano fino de película, alta resolución.
 ```
+
+### D · Primer plano con silueta al fondo
+
+Igual que la A, con una mujer adulta apenas sugerida en la penumbra. Tiene que quedar como silueta: sin cara, sin piel iluminada, sin detalle.
+
+```
+Fotografía cinematográfica en clave baja, estilo claroscuro, primer plano a la altura de los ojos. En primer plano, una mano adulta sostiene una sola carta de juego vertical, de frente a la cámara, perfectamente plana y derecha, que ocupa casi la mitad del encuadre. La carta está completamente en blanco, color rosa crema muy claro con un borde fino bordó, sin ningún texto ni dibujo; los dedos la sujetan solo por el borde inferior. Al fondo, muy desenfocada y casi fundida con la oscuridad, la silueta de una mujer adulta de pie, vista de costado, de la cintura a los hombros: es solo un contorno oscuro, recortado por un hilo de luz cálida de vela que dibuja la curva de la cintura, el hombro y el borde de encaje de una prenda de lencería. No se ve la cara ni ningún detalle del cuerpo, solo la línea del contorno. La única fuente de luz es la llama de una vela a un costado, que ilumina de lleno la carta. Sobre la mesa, desenfocados, una copa de vino tinto y un mazo de cartas de dorso bordó liso con filete dorado fino. Fondo negro puro, sin luz ambiente, contraste alto, sombras densas, lente de 85 mm, muy poca profundidad de campo, grano fino de película, alta resolución.
+```
+
+Si la herramienta bloquea "lencería", cambiar esa parte por: `el borde de encaje de un camisón corto de satén`.
