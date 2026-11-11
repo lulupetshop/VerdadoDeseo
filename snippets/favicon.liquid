@@ -1,11 +1,12 @@
 {%- comment -%}
   Favicon de la tienda. Si se carga uno en Personalizar tema > Configuración,
-  se usa ese; si no, se usa el monograma VD de assets/favicon.svg.
+  se usa ese; si no, se usa el monograma VD de assets/favicon-*.png.
 {%- endcomment -%}
 {%- if settings.favicon != blank -%}
   <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
 {%- else -%}
-  <link rel="icon" type="image/svg+xml" href="{{ 'favicon.svg' | asset_url }}">
   <link rel="icon" type="image/png" sizes="32x32" href="{{ 'favicon-32.png' | asset_url }}">
+  <link rel="icon" type="image/png" sizes="48x48" href="{{ 'favicon-48.png' | asset_url }}">
+  <link rel="icon" type="image/png" sizes="512x512" href="{{ 'favicon-512.png' | asset_url }}">
   <link rel="apple-touch-icon" href="{{ 'apple-touch-icon.png' | asset_url }}">
 {%- endif -%}
