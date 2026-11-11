@@ -19,14 +19,16 @@ Firefly no escribe bien textos largos y bloquea lo explícito, así que se le pi
 Ajustes: modelo Firefly Image 4 (o el más nuevo), tipo de contenido **Foto**, proporción **4:5** para feed y **9:16** para historias y reels.
 
 ```
-Fotografía de producto cinematográfica, vista desde arriba en ángulo de 45 grados: una mano adulta sostiene una sola carta de juego vertical, completamente en blanco, color rosa crema muy claro con un borde fino bordó, sin ningún texto ni dibujo, ocupando el centro del encuadre y bien enfocada. Debajo, una mesa de madera oscura con un mazo de cartas bordó con filete dorado, dos copas de vino tinto y una vela encendida. Luz cálida de vela, penumbra, fondo negro y bordó profundo desenfocado, reflejos dorados suaves, ambiente íntimo y elegante estilo noir, poca profundidad de campo, lente de 50 mm, grano fino de película, alta resolución.
+Fotografía cinematográfica en clave baja, estilo claroscuro, vista desde arriba en ángulo de 45 grados. Escena muy oscura, casi negra: la única fuente de luz es la llama de una vela encendida, ubicada muy cerca de la carta. Una mano adulta sostiene una sola carta de juego vertical, completamente en blanco, color rosa crema muy claro con un borde fino bordó, sin ningún texto ni dibujo, en el centro del encuadre y bien enfocada; la luz cálida y dorada de la vela ilumina de lleno la carta y roza los dedos. Todo lo demás se pierde en sombra profunda: sobre una mesa de madera casi negra se adivinan apenas un mazo de cartas bordó con filete dorado y dos copas de vino tinto, visibles solo por los reflejos y destellos de la llama en el cristal y en el dorado. Fondo negro puro, sin luz ambiente ni luz de relleno, caída de luz rápida, contraste alto, sombras densas, halo cálido alrededor de la llama, subexpuesta, grano fino de película, lente de 50 mm, poca profundidad de campo, alta resolución.
 ```
 
 Qué evitar (pegarlo en el campo de exclusión si aparece; si no, agregarlo al final con "Sin:"):
 
 ```
-texto, letras, números, logos, marcas de agua, caras, desnudez, lencería, piel expuesta, manos deformes, dedos de más, varias cartas en la mano, naipes de póker, luz fría
+luz de día, luz de ventana, luz ambiente, luz pareja, luz de estudio, fondo iluminado, paredes visibles, cortinas, muebles, luz fría, texto, letras, números, logos, marcas de agua, caras, desnudez, lencería, manos deformes, dedos de más, varias cartas en la mano, naipes de póker
 ```
+
+En el panel de Firefly: Efectos → Iluminación **Poca luz** (o **Luz dramática**) y Color y tono **Tono cálido**. Si una imagen ya gustó por la composición, subirla como **referencia de composición** y generar de nuevo con este prompt: mantiene el encuadre y cambia la luz.
 
 Variante sin mano (más fácil de componer):
 
