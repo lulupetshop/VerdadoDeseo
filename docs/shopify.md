@@ -36,6 +36,7 @@ El PDF principal no lleva precio tachado: el 50 % off ($18.750) lo aplica el có
 ## Código de descuento
 
 - `NOCHE50`: 50 % solo sobre "Verdad o Deseo · PDF" ($37.500 → $18.750). Activo desde el 10/11/2026, sin vencimiento, para todos los clientes.
+- **Mazo físico: PDF de regalo** (automático, comprá X y llevate Y): con 1 mazo físico en el carrito, 1 PDF de Verdad o Deseo queda en $0. Una vez por pedido; no se combina con otros descuentos de producto ni de pedido. Activo desde el 11/11/2026, sin vencimiento. La landing arma el carrito del mazo con el mazo + el PDF (`/cart/51565634191577:1,51562139255001:1`), sin código.
 
 ## Hecho
 
