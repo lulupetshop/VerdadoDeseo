@@ -73,8 +73,6 @@ canvas#gl { position: absolute; inset: 0; width: 100%; height: 100%; display: bl
 .intro .lead { color: var(--fg); opacity: .86; margin: 0 auto 8px; max-width: 48ch; font-size: 16px; }
 .intro .facts { color: var(--gold); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 800; margin: 0; }
 .hint { font-size: 13px; color: var(--muted); margin: 0 0 10px; }
-.cta { display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
-.cta .link { color: var(--fg); font-size: 14px; text-underline-offset: 4px; }
 .chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
 .chip { font: 600 12px/1 var(--body); color: var(--muted); background: rgba(7,4,5,.5); border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; cursor: pointer; }
 .chip[aria-pressed="true"] { color: var(--fg); border-color: var(--gold); }
@@ -86,8 +84,8 @@ canvas#gl { position: absolute; inset: 0; width: 100%; height: 100%; display: bl
 .stash { position: fixed; z-index: 30; left: 50%; transform: translateX(-50%); opacity: 0; pointer-events: none; transition: opacity .3s; }
 .stash.on { opacity: 1; pointer-events: auto; }
 .playing .vignette { opacity: 0; }
-.playing .hint, .playing .chips, .playing .cta, .playing .intro, .playing .links { opacity: 0; pointer-events: none; }
-.hint, .chips, .cta, .links { transition: opacity .4s; }
+.playing .hint, .playing .chips, .playing .intro, .playing .links { opacity: 0; pointer-events: none; }
+.hint, .chips, .links { transition: opacity .4s; }
 @media (max-width: 640px) {
   .bar .links a:not(.btn) { display: none; }
   .intro { top: max(68px, calc(env(safe-area-inset-top) + 56px)); }
@@ -145,7 +143,6 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; font-size:
 .now { font: 600 26px/1 var(--display); color: var(--fg); font-variant-numeric: tabular-nums; }
 .off { font: 800 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: #140a0b; background: var(--gold); padding: 5px 8px; border-radius: 999px; }
 .expired .was, .expired .off { display: none; }
-.offer .cta { margin-top: 2px; }
 .playing .offer { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .timer::before { animation: none; } }
 
@@ -182,7 +179,6 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; font-size:
 .product:hover .stock, .product:focus-within .stock { color: var(--fg); }
 .product:hover .was, .product:focus-within .was { color: rgba(243,233,226,.7); }
 .product:hover .off, .product:focus-within .off { background: var(--fg); color: var(--wine); }
-.product .btn[aria-disabled="true"] { opacity: .5; pointer-events: none; }
 
 .faq { max-width: 760px; }
 .faq details { border-bottom: 1px solid var(--line); padding: 18px 0; }
@@ -254,41 +250,59 @@ footer .contact { display: flex; gap: 18px; flex-wrap: wrap; }
 }
 body.modal-open { overflow: hidden; }
 
-/* ---------- Oferta al costado de la mesa (pantallas grandes) ---------- */
+/* ---------- Tarjeta de oferta: el mazo primero, el PDF como alternativa ---------- */
 .side-offer { display: none; }
 .side-offer p { margin: 0; }
 .so-tag { font: 800 11px/1 var(--body); letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
-.so-label { font-size: 13px; color: var(--muted); }
-.so-timer { font: 800 46px/1 var(--body); color: var(--fg); font-variant-numeric: tabular-nums; letter-spacing: .02em; }
-.so-price { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding-top: 2px; }
-.so-price .now { font-size: 44px; color: var(--gold); }
-.side-offer .btn { width: 100%; text-align: center; padding: 17px 20px; margin-top: 4px; }
+.so-stock { font: 800 12px/1.2 var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--fg); }
+.so-price { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.so-price .now { font-size: 46px; color: var(--gold); }
 .so-note { font-size: 13px; color: var(--muted); }
-.so-link { font-size: 13px; color: var(--fg); text-underline-offset: 3px; }
-.expired .so-timer { display: none; }
+.gift { margin: 0; font-size: 14px; font-weight: 600; color: var(--fg); }
+.side-offer > .btn { width: 100%; text-align: center; padding: 17px 20px; margin-top: 2px; }
+.so-pdf { margin-top: 8px; padding-top: 14px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
+.so-alt { font-size: 13px; color: var(--muted); }
+.so-pdf-line { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 14px; }
+.pdf-now { font-weight: 800; color: var(--fg); }
+.so-pdf-line .timer strong, .of-pdf .timer strong { font-size: 13px; }
+.so-pdf .btn { justify-self: start; }
+.expired .timer { display: none; }
 .playing .side-offer { opacity: 0; pointer-events: none; }
 @media (min-width: 1024px) and (min-height: 600px) {
-  .side-offer { display: flex; flex-direction: column; gap: 12px; position: absolute; z-index: 5; left: max(40px, 3.5vw); top: 50%; transform: translateY(-36%);
-    width: 290px; padding: 26px 24px 22px; border-radius: 16px; background: rgba(18,10,12,.58); border: 1px solid var(--line);
+  .side-offer { display: flex; flex-direction: column; gap: 10px; position: absolute; z-index: 5; left: max(40px, 3.5vw); top: 50%; transform: translateY(-40%);
+    width: 300px; padding: 24px 24px 22px; border-radius: 16px; background: rgba(18,10,12,.6); border: 1px solid var(--line);
     -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: 0 30px 60px rgba(0,0,0,.45); transition: opacity .4s; }
   .ui.bottom .offer { display: none; }
 }
 
-/* ---------- Oferta de la portada en celular y tablet: tarjeta ---------- */
+/* ---------- Tarjeta de la portada en celular y tablet ---------- */
+.of-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.of-pdf { background: none; border: 0; padding: 4px 0 0; color: var(--muted); font: 400 13px/1.4 var(--body); cursor: pointer; text-align: center; }
+.of-pdf b, .of-pdf .pdf-now { color: var(--fg); }
 @media (max-width: 1023px), (max-height: 599px) {
-  .ui.bottom .offer { width: min(100%, 420px); padding: 14px 16px 16px; border-radius: 14px; background: rgba(18,10,12,.62); border: 1px solid var(--line);
-    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
-  .ui.bottom .offer { align-items: stretch; gap: 12px; }
-  .ui.bottom .offer-line { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "timer timer off" "was now now"; align-items: center; gap: 6px 12px; }
-  .ui.bottom .offer .timer { grid-area: timer; }
-  .ui.bottom .offer .was { grid-area: was; }
-  .ui.bottom .offer .now { grid-area: now; font-size: 34px; color: var(--gold); text-align: left; }
-  .ui.bottom .offer .off { grid-area: off; }
-  .ui.bottom .offer.expired .offer-line { grid-template-areas: "timer timer timer" "now now now"; }
-  .ui.bottom .offer .cta { margin: 0; }
-  .ui.bottom .offer .cta .btn { flex: 1; text-align: center; padding-block: 17px; }
+  .ui.bottom .offer { width: min(100%, 420px); padding: 14px 16px 12px; border-radius: 14px; background: rgba(18,10,12,.66); border: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); align-items: stretch; gap: 8px; }
+  .ui.bottom .offer-line { justify-content: flex-start; gap: 10px; }
+  .ui.bottom .offer .now { font-size: 34px; color: var(--gold); }
+  .ui.bottom .offer .gift { font-size: 13px; color: var(--muted); font-weight: 400; }
+  .ui.bottom .offer > .btn { width: 100%; text-align: center; padding-block: 16px; }
 }
-@media (max-width: 640px) { .ui.bottom .offer .cta .link { display: none; } }
+@media (max-width: 640px) { .ui.bottom .hint { display: none; } }
+.of-top .so-stock { white-space: nowrap; }
+@media (max-width: 380px) {
+  .of-top .so-tag { letter-spacing: .1em; }
+  .of-top .so-stock { font-size: 11px; letter-spacing: .02em; }
+  .of-pdf .timer, .of-pdf [aria-hidden] { display: none; }
+}
+
+/* ---------- Otras piezas del mazo ---------- */
+.trae figure { margin: 0; }
+.trae figcaption { font-size: 12px; color: var(--muted); margin-top: 10px; text-align: center; }
+.version .gift { font-size: 14px; }
+.product:hover .gift, .product:focus-within .gift { color: var(--fg); }
+.upsell { color: var(--fg) !important; font-size: 14px !important; }
+.upsell:empty { display: none; }
+.btn[aria-disabled="true"] { opacity: .5; pointer-events: none; }
 
 /* ---------- Precio en la píldora y barra de compra fija ---------- */
 .pill-price { display: none; }
@@ -303,8 +317,7 @@ body.modal-open .buybar, .playing .buybar { transform: translateY(110%); visibil
 .bb-price { display: flex; gap: 8px; align-items: baseline; }
 .bb-price .was { font-size: 13px; }
 .bb-price .now { font-size: 28px; color: var(--gold); }
-.buybar .timer { font-size: 12px; color: var(--muted); gap: 6px; }
-.buybar .timer strong { font-size: 13px; }
+.bb-stock { font: 800 11px/1 var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .buybar .btn { padding: 16px 28px; flex-shrink: 0; }
 @media (min-width: 1024px) and (min-height: 600px) { .buybar { display: none; } }
 @media (max-width: 1023px), (max-height: 599px) {
@@ -331,22 +344,26 @@ body.modal-open .buybar, .playing .buybar { transform: translateY(110%); visibil
     <div class="links">
       <a href="#como">Cómo se juega</a>
       <a href="#versiones">Versiones</a>
-      <button class="btn btn--sm" type="button" data-buy>Comprar<span class="pill-price" data-now></span></button>
+      <button class="btn btn--sm" type="button" data-buy="mazo">Reservar<span class="pill-price" data-mazo-now></span></button>
     </div>
   </nav>
   <div class="intro">
     <h1>Verdad <em>o</em> deseo</h1>
-    <p class="lead">Cartas de preguntas y retos para jugar en pareja, en tres niveles: suave, intenso y explícito.</p>
-    <p class="facts">60 cartas · Para 2 · PDF o mazo físico</p>
+    <p class="lead">Un mazo de cartas de preguntas y retos para jugar en pareja, en tres niveles: suave, intenso y explícito.</p>
+    <p class="facts">Mazo de 60 cartas · Para 2 · Envío gratis</p>
   </div>
-  <aside class="side-offer" data-offer aria-label="Oferta">
-    <p class="so-tag">PDF · Acceso inmediato</p>
-    <p class="so-label timer"><span data-label>Tu oferta termina en</span></p>
-    <p class="so-timer" data-timer>15:00</p>
-    <div class="so-price"><span class="was" data-was></span><span class="now" data-now></span><span class="off" data-off></span></div>
-    <button class="btn" type="button" data-buy>Comprar el PDF</button>
-    <p class="so-note">Llega a tu mail apenas pagás.</p>
-    <a class="so-link" href="#versiones">¿Preferís el mazo físico?</a>
+  <aside class="side-offer" aria-label="Oferta">
+    <p class="so-tag">Mazo físico · Preventa</p>
+    <p class="so-stock" data-stock></p>
+    <div class="so-price"><span class="was" data-mazo-was></span><span class="now" data-mazo-now></span><span class="off" data-mazo-off></span></div>
+    <p class="so-note">Envío gratis · Se envía desde el 10/12</p>
+    <p class="gift">+ PDF de regalo para jugar mientras llega</p>
+    <button class="btn" type="button" data-buy="mazo">Reservar mi mazo</button>
+    <div class="so-pdf" data-offer>
+      <p class="so-alt">¿Querés probarlo antes?</p>
+      <p class="so-pdf-line"><b>PDF</b> <span class="was" data-was></span> <span class="pdf-now" data-now></span> <span class="timer"><strong data-timer>15:00</strong></span></p>
+      <button class="btn btn--ghost btn--sm" type="button" data-buy="pdf">Comprar el PDF</button>
+    </div>
   </aside>
   <div class="ui bottom">
     <p class="hint" id="hint">Probá una: tocá el mazo.</p>
@@ -356,15 +373,12 @@ body.modal-open .buybar, .playing .buybar { transform: translateY(110%); visibil
       <button class="chip" type="button" data-level="2" aria-pressed="false">2 · Intenso</button>
       <button class="chip" type="button" data-level="3" aria-pressed="false">3 · Explícito</button>
     </div>
-    <div class="offer" data-offer>
-      <div class="offer-line">
-        <span class="timer"><span data-label>Termina en</span> <strong data-timer>15:00</strong></span>
-        <span class="was" data-was></span><span class="now" data-now></span><span class="off" data-off></span>
-      </div>
-      <div class="cta">
-        <button class="btn" type="button" data-buy>Comprar el PDF</button>
-        <a class="link" href="#como">Cómo se juega</a>
-      </div>
+    <div class="offer">
+      <div class="of-top"><span class="so-tag">Mazo físico · Preventa</span><span class="so-stock" data-stock></span></div>
+      <div class="offer-line"><span class="was" data-mazo-was></span><span class="now" data-mazo-now></span><span class="off" data-mazo-off></span></div>
+      <p class="gift">Envío gratis · + PDF de regalo para jugar ya</p>
+      <button class="btn" type="button" data-buy="mazo">Reservar mi mazo</button>
+      <button class="of-pdf" type="button" data-buy="pdf" data-offer>¿Probarlo antes? <b>PDF</b> <span class="was" data-was></span> <span class="pdf-now" data-now></span> <span class="timer"><strong data-timer>15:00</strong></span> <span aria-hidden="true">→</span></button>
     </div>
   </div>
   <button class="sr" id="draw-kb" type="button">Sacar una carta</button>
@@ -372,12 +386,12 @@ body.modal-open .buybar, .playing .buybar { transform: translateY(110%); visibil
 </header>
 
 
-<div class="buybar" id="buybar" data-offer>
+<div class="buybar" id="buybar">
   <div class="bb-info">
-    <div class="bb-price"><span class="was" data-was></span><span class="now" data-now></span></div>
-    <span class="timer"><span data-label>Termina en</span> <strong data-timer>15:00</strong></span>
+    <div class="bb-price"><span class="was" data-mazo-was></span><span class="now" data-mazo-now></span></div>
+    <span class="bb-stock" data-stock></span>
   </div>
-  <button class="btn" type="button" data-buy>Comprar</button>
+  <button class="btn" type="button" data-buy="mazo">Reservar</button>
 </div>
 
 <div class="veil" id="veil"></div>
@@ -388,12 +402,15 @@ body.modal-open .buybar, .playing .buybar { transform: translateY(110%); visibil
   <section class="block" id="trae" aria-labelledby="trae-title">
     <h2 id="trae-title">Qué trae el juego</h2>
     <div class="trae">
-      <img src="{{ 'vod-verdad-o-deseo.jpg' | asset_url }}" alt="Portada de Verdad o Deseo" width="480" height="720" loading="lazy">
+      <figure>
+        <img src="{{ 'vod-mazo-estuche.jpg' | asset_url }}" alt="Estuche del mazo Verdad o Deseo" width="600" height="733" loading="lazy">
+        <figcaption>Imagen ilustrativa del estuche.</figcaption>
+      </figure>
       <ul>
-        <li><b>60</b><span>Cartas de verdad y deseo, en tres niveles.</span></li>
+        <li><b>60</b><span>Cartas de verdad y deseo, impresas y listas para jugar.</span></li>
         <li><b>3</b><span>Niveles: suave, intenso y explícito. Arrancan por donde quieran.</span></li>
-        <li><b>1</b><span>PDF listo para imprimir y recortar en casa.</span></li>
-        <li><b>0</b><span>Minutos de espera: llega a tu mail apenas se acredita el pago.</span></li>
+        <li><b>1</b><span>PDF de regalo para jugar desde hoy, mientras llega el mazo.</span></li>
+        <li><b>0</b><span>Pesos de envío: es gratis a todo el país.</span></li>
       </ul>
     </div>
   </section>
@@ -431,28 +448,30 @@ body.modal-open .buybar, .playing .buybar { transform: translateY(110%); visibil
   </section>
 
   <section class="block" id="versiones" aria-labelledby="versiones-title">
-    <h2 id="versiones-title">Versiones</h2>
+    <h2 id="versiones-title">Elegí cómo jugar</h2>
     <div class="versiones">
-      <article class="product version product--featured" data-offer>
-        <img src="{{ 'vod-verdad-o-deseo.jpg' | asset_url }}" alt="" width="480" height="720" loading="lazy">
+      <article class="product version product--featured">
+        <img src="{{ 'vod-mazo-estuche.jpg' | asset_url }}" alt="" width="600" height="733" loading="lazy">
         <div class="info">
-          <span class="tag">PDF · Acceso inmediato</span>
-          <h3>Verdad o Deseo</h3>
-          <p>Las 60 cartas en PDF. Llega a tu mail apenas pagás y lo imprimís en casa.</p>
-          <span class="timer"><span data-label>Termina en</span> <strong data-timer>15:00</strong></span>
-          <div class="price-line"><span class="was" data-was></span><span class="price" data-now></span><span class="off" data-off></span></div>
-          <div class="row"><button class="btn" type="button" data-buy>Comprar el PDF</button></div>
+          <span class="tag">Mazo físico · Preventa</span>
+          <h3>Reservá tu mazo</h3>
+          <p>Las 60 cartas impresas, listas para jugar. Solo 50 unidades con 33 % off. Se envían a partir del 10 de diciembre. Envío gratis a todo el país.</p>
+          <p class="gift">+ PDF de regalo para jugar mientras llega.</p>
+          <span class="stock" data-stock></span>
+          <div class="price-line"><span class="was" data-mazo-was></span><span class="price" data-mazo-now></span><span class="off" data-mazo-off></span></div>
+          <div class="row"><button class="btn" type="button" data-buy="mazo">Reservar mi mazo</button></div>
         </div>
       </article>
-      <article class="product version">
+      <article class="product version" data-offer>
         <img src="{{ 'vod-verdad-o-deseo.jpg' | asset_url }}" alt="" width="480" height="720" loading="lazy">
         <div class="info">
-          <span class="tag">Mazo físico · Próximamente</span>
-          <h3>Reservá tu mazo</h3>
-          <p>Las 60 cartas impresas, listas para jugar. Solo 50 unidades con 33 % off para los primeros que lo reserven. Se envían a partir del 10 de diciembre. Envío gratis a todo el país.</p>
-          <span class="stock" data-stock></span>
-          <div class="price-line"><span class="was" data-mazo-was></span><span class="price" data-mazo-now></span></div>
-          <div class="row"><a class="btn btn--ghost" href="#" data-mazo>Reservar mi mazo</a></div>
+          <span class="tag">PDF · Para probarlo antes</span>
+          <h3>Empezá hoy con el PDF</h3>
+          <p>¿Querés jugar esta noche o probarlo antes de tener el mazo? Llega a tu mail apenas pagás y lo imprimís en casa.</p>
+          <span class="timer"><span data-label>Termina en</span> <strong data-timer>15:00</strong></span>
+          <div class="price-line"><span class="was" data-was></span><span class="price" data-now></span><span class="off" data-off></span></div>
+          <p class="upsell" data-upsell></p>
+          <div class="row"><button class="btn btn--ghost" type="button" data-buy="pdf">Comprar el PDF</button></div>
         </div>
       </article>
     </div>
@@ -460,9 +479,11 @@ body.modal-open .buybar, .playing .buybar { transform: translateY(110%); visibil
 
   <section class="block faq" id="faq" aria-labelledby="faq-title">
     <h2 id="faq-title">Preguntas frecuentes</h2>
-    <details><summary>¿Cómo lo recibo?</summary><p>Por mail, apenas se acredita el pago, en la dirección que pongas al comprar. Si no te llega, revisá spam o escribinos.</p></details>
-    <details><summary>¿Lo puedo imprimir?</summary><p>Sí. Es un PDF pensado para imprimir y recortar en casa.</p></details>
-    <details><summary>¿Cuándo llega el mazo físico?</summary><p>Es una reserva: los mazos se envían a partir del 10 de diciembre. El envío es gratis a todo el país.</p></details>
+    <details><summary>¿Cuándo llega el mazo?</summary><p>Es una preventa: los mazos se envían a partir del 10 de diciembre. El envío es gratis a todo el país. Mientras tanto te llega el PDF de regalo para empezar a jugar.</p></details>
+    <details><summary>¿Qué diferencia hay entre el mazo y el PDF?</summary><p>Son las mismas 60 cartas. El mazo viene impreso, listo para jugar, y trae el PDF de regalo. El PDF lo imprimís y recortás en casa.</p></details>
+    <details><summary>¿Puedo comprar el PDF ahora y el mazo después?</summary><p>Sí, son compras separadas. Si querés los dos, conviene reservar el mazo: el PDF viene de regalo.</p></details>
+    <details><summary>¿Cómo recibo el PDF?</summary><p>Por mail, apenas se acredita el pago, en la dirección que pongas al comprar. Si no te llega, revisá spam o escribinos.</p></details>
+    <details><summary>¿Lo puedo imprimir?</summary><p>Sí. El PDF está pensado para imprimir y recortar en casa.</p></details>
     <details><summary>¿Es para mayores de 18?</summary><p>Sí. El nivel 3 tiene contenido sexual explícito.</p></details>
     <details><summary>¿Y si una carta no nos gusta?</summary><p>Se pasa y se saca otra. Nadie hace nada que no quiera.</p></details>
     <details><summary>¿Cómo los contacto?</summary><p>Por mail a <a href="mailto:digitalesworldd@gmail.com">digitalesworldd@gmail.com</a> o por Instagram en <a href="https://www.instagram.com/verdad.deseo/" target="_blank" rel="noopener">@Verdad.deseo</a>.</p></details>
@@ -479,7 +500,7 @@ body.modal-open .buybar, .playing .buybar { transform: translateY(110%); visibil
     <button class="close" type="button" data-close aria-label="Cerrar">×</button>
     <h2 id="addons-title">Antes de pagar, ¿sumás algo más?</h2>
     <p>Estos precios son solo para quien se lleva Verdad o Deseo.</p>
-    <div data-offer><span class="timer"><span data-label>Tu precio de oferta termina en</span> <strong data-timer>15:00</strong></span></div>
+    <div data-offer id="addons-timer"><span class="timer"><span data-label>Tu precio de oferta termina en</span> <strong data-timer>15:00</strong></span></div>
     <ul class="addon-list" id="addon-list"></ul>
     <div class="resumen" id="resumen"></div>
     <div class="acciones">
@@ -499,7 +520,8 @@ body.modal-open .buybar, .playing .buybar { transform: translateY(110%); visibil
     'otra-posicion': {{ 'vod-otra-posicion.jpg' | asset_url | json }},
     'esta-noche-se-juega': {{ 'vod-esta-noche-se-juega.jpg' | asset_url | json }},
     'sin-filtro': {{ 'vod-sin-filtro.jpg' | asset_url | json }},
-    'me-debes-una': {{ 'vod-me-debes-una.jpg' | asset_url | json }}
+    'me-debes-una': {{ 'vod-me-debes-una.jpg' | asset_url | json }},
+    'dorso': {{ 'vod-dorso.png' | asset_url | json }}
   };
   window.VOD_LIVE = {
   {%- assign vod_handles = 'verdad-o-deseo-pdf,verdad-o-deseo-mazo-fisico-reserva,otra-posicion,esta-noche-se-juega,sin-filtro,me-debes-una' | split: ',' -%}
@@ -578,29 +600,32 @@ var CONFIG = {
     $$('[data-off]').forEach(function (el) { el.textContent = CONFIG.descuento + ' % off'; });
     if (!on) $$('[data-timer]').forEach(function (el) { el.textContent = ''; });
   }
+  function pintarUpsell() {
+    var dif = M.precio - CONFIG.pdf.precio, on = activa();
+    $$('[data-upsell]').forEach(function (el) {
+      el.textContent = !on && hayMazo && dif > 0 ? 'Por ' + fmt(dif) + ' más tenés el mazo impreso, con envío gratis y el PDF de regalo.' : '';
+    });
+  }
   var estaba = activa();
   function tick() {
     var r = Math.max(0, fin - Date.now()), m = Math.floor(r / 60000), s = Math.floor(r / 1000) % 60;
     var txt = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
     if (activa()) $$('[data-timer]').forEach(function (el) { el.textContent = txt; });
-    if (estaba !== activa()) { estaba = activa(); pintarPrecios(); resumen(); }
-  }
-  pintarPrecios(); tick(); setInterval(tick, 1000);
-
-  /* ---------- Mazo físico: stock real ---------- */
-  var M = CONFIG.mazo, btnMazo = $('[data-mazo]');
-  $('[data-mazo-was]').textContent = M.tachado ? fmt(M.tachado) : '';
-  $('[data-mazo-now]').textContent = fmt(M.precio);
-  if (M.stock > 0) {
-    $('[data-stock]').textContent = 'Quedan ' + M.stock + ' de ' + M.total;
-    btnMazo.href = '/cart/' + M.variant + ':1';
-  } else {
-    $('[data-stock]').textContent = 'Agotado';
-    btnMazo.textContent = 'Agotado'; btnMazo.setAttribute('aria-disabled', 'true'); btnMazo.removeAttribute('href');
+    if (estaba !== activa()) { estaba = activa(); pintarPrecios(); pintarUpsell(); resumen(); }
   }
 
-  /* ---------- Ventana de complementos ---------- */
-  var modal = $('#addons'), lista = $('#addon-list'), elegidos = {}, ultimoFoco = null;
+  /* ---------- Mazo físico: precio y stock real. Al llegar a 0 se deja de vender ---------- */
+  var M = CONFIG.mazo, hayMazo = M.stock > 0;
+  $$('[data-mazo-was]').forEach(function (el) { el.textContent = M.tachado ? fmt(M.tachado) : ''; });
+  $$('[data-mazo-now]').forEach(function (el) { el.textContent = fmt(M.precio); });
+  $$('[data-mazo-off]').forEach(function (el) { el.textContent = M.tachado ? Math.round((1 - M.precio / M.tachado) * 100) + ' % off' : ''; });
+  $$('[data-stock]').forEach(function (el) { el.textContent = hayMazo ? 'Quedan ' + M.stock + ' de ' + M.total : 'Agotado'; });
+  if (!hayMazo) $$('[data-buy="mazo"]').forEach(function (b) { b.textContent = 'Agotado'; b.setAttribute('aria-disabled', 'true'); b.disabled = true; });
+
+  pintarPrecios(); pintarUpsell(); tick(); setInterval(tick, 1000);
+
+  /* ---------- Ventana de complementos: base = mazo (con el PDF de regalo) o PDF ---------- */
+  var modal = $('#addons'), lista = $('#addon-list'), elegidos = {}, ultimoFoco = null, base = 'mazo';
   CONFIG.extras.forEach(function (x) {
     var li = document.createElement('li');
     li.className = 'addon';
@@ -625,14 +650,23 @@ var CONFIG = {
     lista.appendChild(li);
   });
 
+  /* Mazo: el carrito lleva el mazo y el PDF; el descuento automático de Shopify deja el PDF en $0 */
   function link(conExtras) {
-    var items = [CONFIG.pdf.variant + ':1'];
+    var items = base === 'mazo' ? [M.variant + ':1', CONFIG.pdf.variant + ':1'] : [CONFIG.pdf.variant + ':1'];
     if (conExtras) Object.keys(elegidos).forEach(function (v) { items.push(v + ':1'); });
-    return '/cart/' + items.join(',') + (activa() ? '?discount=' + encodeURIComponent(CONFIG.codigo) : '');
+    return '/cart/' + items.join(',') + (base === 'pdf' && activa() ? '?discount=' + encodeURIComponent(CONFIG.codigo) : '');
   }
   function resumen() {
-    var base = activa() ? oferta : CONFIG.pdf.precio, total = base, filas = '';
-    filas += '<div><span>Verdad o Deseo · PDF</span><span>' + fmt(base) + '</span></div>';
+    var filas = '', total;
+    if (base === 'mazo') {
+      total = M.precio;
+      filas += '<div><span>Mazo físico · Preventa</span><span>' + fmt(M.precio) + '</span></div>';
+      filas += '<div><span>PDF de regalo</span><span>Gratis</span></div>';
+    } else {
+      total = activa() ? oferta : CONFIG.pdf.precio;
+      filas += '<div><span>Verdad o Deseo · PDF</span><span>' + fmt(total) + '</span></div>';
+    }
+    var fijas = base === 'mazo' ? 2 : 1;
     Object.keys(elegidos).forEach(function (v) {
       var x = elegidos[v]; total += x.precio;
       filas += '<div><span></span><span>' + fmt(x.precio) + '</span></div>';
@@ -640,11 +674,13 @@ var CONFIG = {
     filas += '<div class="total"><span>Total</span><span>' + fmt(total) + '</span></div>';
     var r = $('#resumen'); r.innerHTML = filas;
     var nombres = Object.keys(elegidos).map(function (v) { return elegidos[v].nombre; });
-    $$('div', r).slice(1, 1 + nombres.length).forEach(function (d, i) { d.firstChild.textContent = nombres[i]; });
+    $$('div', r).slice(fijas, fijas + nombres.length).forEach(function (d, i) { d.firstChild.textContent = nombres[i]; });
     $('#pay').href = link(true);
   }
   function abrir(e) {
     if (e) e.preventDefault();
+    base = e && e.currentTarget.dataset.buy === 'pdf' || !hayMazo ? 'pdf' : 'mazo';
+    $('#addons-timer').hidden = base === 'mazo';
     ultimoFoco = document.activeElement;
     resumen();
     modal.hidden = false; document.body.classList.add('modal-open');
@@ -1026,15 +1062,9 @@ function tex(draw, w = 512, h = 716) {
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
   return t;
 }
-const backTex = tex((x, w, h) => {
-  x.fillStyle = '#8c1c3a'; x.fillRect(0, 0, w, h);
-  x.strokeStyle = '#f6c45a'; x.lineWidth = 10; x.strokeRect(26, 26, w - 52, h - 52);
-  x.lineWidth = 3; x.globalAlpha = .55;
-  for (let i = -h; i < w + h; i += 46) { x.beginPath(); x.moveTo(i, 40); x.lineTo(i + h, h - 40 + 0); x.stroke(); x.beginPath(); x.moveTo(i + h, 40); x.lineTo(i, h - 40); x.stroke(); }
-  x.globalAlpha = 1; x.fillStyle = '#8c1c3a'; x.beginPath(); x.ellipse(w / 2, h / 2, 120, 120, 0, 0, 7); x.fill();
-  x.strokeStyle = '#f6c45a'; x.lineWidth = 8; x.stroke();
-  x.fillStyle = '#f6c45a'; x.font = 'italic 600 110px "Cormorant Garamond", serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('V·D', w / 2, h / 2 + 6);
-});
+/* Dorso real de las cartas (assets/vod-dorso.png) */
+const backTex = new THREE.TextureLoader().load((window.VOD_IMG || {}).dorso || '');
+backTex.colorSpace = THREE.SRGBColorSpace; backTex.anisotropy = 8;
 const mask = w => w.replace(/\S+/g, p => p.length <= 2 ? p[0] + '*' : p.length === 3 ? p[0] + '*' + p[2] : p.slice(0, 2) + '*'.repeat(p.length - 3) + p.slice(-1));
 const plain = t => t.replace(/\{([^}]+)\}/g, (m, w) => mask(w));
 function wrap(x, text, maxW) {
