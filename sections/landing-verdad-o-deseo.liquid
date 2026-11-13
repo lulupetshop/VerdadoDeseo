@@ -318,11 +318,16 @@ body.modal-open .buybar, .playing .buybar { transform: translateY(110%); visibil
   .muestra q { font-size: 19px; }
   .versiones { grid-template-columns: 1fr; }
 }
+/* Celular: portada despejada. Sin barra arriba (el botón de compra ya está en la tarjeta y al bajar aparece la barra fija),
+   sin los niveles sobre la mesa y con la oferta reducida a precio, una línea y botón */
 @media (max-width: 640px) {
-  .bar .links a:not(.btn), .ui.bottom .hint { display: none; }
-  .intro { top: max(68px, calc(env(safe-area-inset-top) + 56px)); }
+  .bar, .ui.bottom .hint, .ui.bottom .chips, .of-top, .of-pdf { display: none; }
+  .ui.bottom .offer { gap: 10px; padding: 16px 16px 14px; }
+  .ui.bottom .offer-line { justify-content: center; }
+  .ui.bottom .offer .gift { text-align: center; }
+  .intro { top: max(36px, calc(env(safe-area-inset-top) + 24px)); }
   .intro .lead { font-size: 21px; }
-  .intro h1 { gap: 10px; letter-spacing: .04em; }
+  .intro h1 { font-size: min(34px, 9.2vw); white-space: nowrap; gap: 10px; letter-spacing: .04em; }
   .intro h1::before, .intro h1::after { flex-basis: 28px; }
   .intro .facts { font-size: 10px; }
   .ui.bottom { padding-bottom: 20px; }
@@ -343,11 +348,6 @@ body.modal-open .buybar, .playing .buybar { transform: translateY(110%); visibil
 @media (max-width: 420px) {
   .version { grid-template-columns: 92px 1fr; gap: 14px; }
   .product h3 { font-size: 26px; }
-}
-@media (max-width: 380px) {
-  .of-top .so-tag { letter-spacing: .1em; }
-  .of-top .so-stock { font-size: 11px; letter-spacing: .02em; }
-  .of-pdf .timer, .of-pdf [aria-hidden] { display: none; }
 }
 
 /* ================= Movimiento reducido ================= */
@@ -409,7 +409,7 @@ body.modal-open .buybar, .playing .buybar { transform: translateY(110%); visibil
     <div class="offer">
       <div class="of-top"><span class="so-tag">Mazo físico · Preventa</span><span class="so-stock" data-stock></span></div>
       <div class="offer-line"><span class="was" data-mazo-was></span><span class="now" data-mazo-now></span><span class="off" data-mazo-off></span></div>
-      <p class="gift">Envío gratis · + PDF de regalo para jugar ya</p>
+      <p class="gift">Envío gratis · PDF de regalo</p>
       <button class="btn" type="button" data-buy="mazo">Reservar mi mazo</button>
       <button class="of-pdf" type="button" data-buy="pdf" data-offer>¿Probarlo antes? <b>PDF</b> <span class="was" data-was></span> <span class="pdf-now" data-now></span> <span class="timer"><strong data-timer>15:00</strong></span> <span aria-hidden="true">→</span></button>
     </div>
