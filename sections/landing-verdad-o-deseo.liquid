@@ -3,8 +3,7 @@
   ventana de complementos antes de pagar y secciones de venta. Precios, IDs y código: bloque CONFIG del último script.
 {%- endcomment -%}
 <style>
-/* Portada low-poly: la mesa a la luz de las velas, todo lo demás en penumbra.
-   La viñeta del final de la escena se funde con el negro de las secciones de abajo. */
+/* ================= Base ================= */
 :root {
   --bg: #070405;
   --bg-2: #120a0c;
@@ -19,152 +18,151 @@
   --display: "Cormorant Garamond", "Times New Roman", serif;
   --body: "Manrope", system-ui, sans-serif;
   --neon: "Poiret One", var(--display);
+  --ease: cubic-bezier(.2, .7, .2, 1);
   color-scheme: dark;
 }
 *, *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; }
+html { scroll-behavior: smooth; }
 body { background: var(--bg); color: var(--fg); font: 400 16px/1.6 var(--body); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-body.playing { overflow: hidden; }
+body.playing, body.modal-open { overflow: hidden; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.sr:focus { position: absolute; z-index: 40; left: 50%; top: 50%; width: auto; height: auto; clip: auto; transform: translate(-50%,-50%); }
 
-/* ---------- Escena ---------- */
-.hero { position: relative; height: 100vh; height: 100svh; min-height: 520px; overflow: hidden;
-  background: radial-gradient(60% 55% at 50% 42%, #2a1426 0%, #12080d 55%, var(--bg) 100%); }
-canvas#gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
-.vignette { position: absolute; inset: 0; pointer-events: none; transition: opacity .6s ease;
-  background:
-    radial-gradient(70% 62% at 50% 44%, rgba(7,4,5,0) 38%, rgba(7,4,5,.55) 72%, rgba(7,4,5,.95) 100%),
-    linear-gradient(to bottom, rgba(7,4,5,0) 62%, var(--bg) 100%); }
-.veil { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
-.veil.on { pointer-events: auto; }
-
-/* La carta se dibuja en 3D; este bloque queda solo para lectores de pantalla */
-.card { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-
-/* Interfaz sobre la escena */
-.ui { position: absolute; z-index: 5; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; gap: 12px;
-  padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); pointer-events: none; }
-.ui > * { pointer-events: auto; }
-.ui.bottom { bottom: 0; padding-bottom: 28px; flex-direction: column; }
-/* Barra superior: fija; al bajar se cierra en una píldora flotante que es el botón de compra */
-.bar { position: fixed; z-index: 40; top: 0; left: 50%; transform: translateX(-50%); width: 100%;
-  display: flex; justify-content: space-between; align-items: center; border-radius: 0; background-color: rgba(122, 22, 48, 0);
-  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
-  transition: width .6s cubic-bezier(.2,.7,.2,1), top .6s cubic-bezier(.2,.7,.2,1), padding .6s cubic-bezier(.2,.7,.2,1),
-    border-radius .6s ease, background-color .4s ease, box-shadow .4s ease, opacity .4s ease; }
-.bar .brand, .bar .links a:not(.btn) { display: inline-block; max-width: 260px; white-space: nowrap; overflow: hidden;
-  transition: opacity .25s ease, max-width .5s ease; }
-.bar .links { transition: gap .5s ease; }
-.bar .btn--sm { transition: background-color .4s ease, border-color .4s ease, padding .5s ease; }
-.bar.pill { top: max(14px, env(safe-area-inset-top)); width: 240px; padding: 0; border-radius: 999px; background-color: var(--wine);
-  box-shadow: 0 14px 34px rgba(0,0,0,.55), inset 0 0 0 1px var(--wine-glow); justify-content: center; }
-.bar.pill .brand, .bar.pill .links a:not(.btn) { opacity: 0; max-width: 0; pointer-events: none; }
-.bar.pill .links { gap: 0; width: 100%; }
-.bar.pill .btn--sm { width: 100%; background-color: transparent; border-color: transparent; padding: 16px 0; font-size: 13px; text-align: center; }
-.bar.pill:hover { background-color: var(--wine-glow); }
-.playing .bar { opacity: 0; pointer-events: none; }
-@media (prefers-reduced-motion: reduce) { .bar, .bar * { transition: none !important; } }
-.brand { font: 600 22px/1 var(--display); color: var(--fg); text-decoration: none; }
-.brand em, .intro h1 em { color: var(--wine-glow); }
-.links { display: flex; gap: 24px; align-items: center; font-size: 14px; }
-.links a:not(.btn) { color: var(--muted); text-decoration: none; }
-.links a:not(.btn):hover { color: var(--fg); }
-.btn--sm { padding: 11px 18px; font-size: 12px; }
-.intro { position: absolute; z-index: 5; left: 0; right: 0; top: max(76px, calc(env(safe-area-inset-top) + 60px)); text-align: center; padding: 0 16px; pointer-events: none; transition: opacity .4s; }
-/* Título en neón dorado art déco: tubo fino, halo cálido y líneas a los costados */
-.intro h1 { font: 400 clamp(34px, 5.6vw, 72px)/1 var(--neon); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 14px;
-  color: #ffe6b0; text-shadow: 0 0 2px #fff3d6, 0 0 8px rgba(227,180,101,.9), 0 0 22px rgba(227,180,101,.6), 0 0 48px rgba(200,120,40,.45);
-  display: flex; align-items: center; justify-content: center; gap: 18px; animation: neon-on 1.6s ease-out .3s both; }
-.intro h1::before, .intro h1::after { content: ""; flex: 0 1 90px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold)); box-shadow: 0 0 6px rgba(227,180,101,.8); }
-.intro h1::after { transform: scaleX(-1); }
-@keyframes neon-on { 0% { opacity: .08; } 12% { opacity: .9; } 16% { opacity: .2; } 26% { opacity: 1; } 32% { opacity: .45; } 40%, 100% { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .intro h1 { animation: none; } }
-.intro .lead { font: italic 600 clamp(22px, 2.4vw, 30px)/1.15 var(--display); color: var(--cream); margin: 0 auto 10px; max-width: 30ch; }
-.intro .lead b { font-weight: 600; color: #ff8a9c; text-shadow: 0 0 2px #ffd0d8, 0 0 10px rgba(176,40,63,.95), 0 0 26px rgba(176,40,63,.7); }
-.intro .facts { color: var(--gold); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 800; margin: 0; }
-.hint { font-size: 13px; color: var(--muted); margin: 0 0 10px; }
-.chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
-.chip { font: 600 12px/1 var(--body); color: var(--muted); background: rgba(7,4,5,.5); border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; cursor: pointer; }
-.chip[aria-pressed="true"] { color: var(--fg); border-color: var(--gold); }
+/* Botones */
 .btn { font: 800 13px/1 var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--fg);
   background: var(--wine); border: 1px solid var(--wine-glow); padding: 15px 30px; border-radius: 999px; cursor: pointer; text-decoration: none; display: inline-block; }
 .btn:hover, .btn:focus-visible { background: var(--wine-glow); outline: none; }
 .btn--ghost { background: transparent; border-color: var(--gold); }
 .btn--ghost:hover, .btn--ghost:focus-visible { background: var(--gold); color: #140a0b; }
-.stash { position: fixed; z-index: 30; left: 50%; transform: translateX(-50%); opacity: 0; pointer-events: none; transition: opacity .3s; }
-.stash.on { opacity: 1; pointer-events: auto; }
-.playing .vignette { opacity: 0; }
-.playing .hint, .playing .chips, .playing .intro, .playing .links { opacity: 0; pointer-events: none; }
-.hint, .chips, .links { transition: opacity .4s; }
-@media (max-width: 640px) {
-  .bar .links a:not(.btn) { display: none; }
-  .intro { top: max(68px, calc(env(safe-area-inset-top) + 56px)); }
-  .intro .lead { font-size: 21px; }
-  .intro h1 { gap: 10px; letter-spacing: .04em; }
-  .intro h1::before, .intro h1::after { flex-basis: 28px; }
-  .intro .facts { font-size: 10px; }
-  .ui.bottom { padding-bottom: 20px; }
-}
-@media (max-height: 700px) and (min-width: 641px) { .intro .lead { font-size: 22px; } .intro h1 { font-size: 48px; } }
-.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.sr:focus { position: absolute; z-index: 40; left: 50%; top: 50%; width: auto; height: auto; clip: auto; transform: translate(-50%,-50%); }
-.scroll { position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%); width: 1px; height: 18px; background: linear-gradient(var(--gold), transparent); opacity: .6; }
+.btn[aria-disabled="true"] { opacity: .5; pointer-events: none; }
 
-/* ---------- Secciones ---------- */
-.wrap { max-width: 1040px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
-section.block { padding-block: 72px; scroll-margin-top: 70px; }
-section.block + section.block { border-top: 1px solid var(--line); }
-.block h2 { font: 600 clamp(36px, 5vw, 56px)/1 var(--display); margin: 0 0 32px; }
-.product { border: 1px solid var(--line); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 12px; background: var(--bg-2);
-  transition: transform .25s ease, background-color .25s ease, border-color .25s ease; }
-.product .tag, .product p, .price, .product .btn { transition: color .25s ease, background-color .25s ease, border-color .25s ease; }
-.product:hover, .product:focus-within { transform: translateY(-6px); background: var(--wine); border-color: var(--wine); }
-.product:hover .tag, .product:hover p, .product:focus-within .tag, .product:focus-within p { color: rgba(243,233,226,.85); }
-.product:hover .price, .product:focus-within .price { color: var(--fg); }
-.product:hover .btn, .product:focus-within .btn { background: var(--fg); color: var(--wine); border-color: var(--fg); }
-@media (prefers-reduced-motion: reduce) { .product:hover, .product:focus-within { transform: none; } }
-html { scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-.product .tag { font: 800 11px/1 var(--body); letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
-.product h3 { font: 600 30px/1.05 var(--display); margin: 0; }
-.product p { margin: 0; color: var(--muted); font-size: 15px; flex: 1; }
-.product .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
-.price { font: 600 28px/1 var(--display); color: var(--gold); font-variant-numeric: tabular-nums; }
-.product .btn { padding: 12px 18px; font-size: 12px; }
-.product--featured { border-color: var(--wine-glow); }
-footer { border-top: 1px solid var(--line); padding-block: 28px 40px; font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+/* Precios y contador (se repiten en portada, versiones, barra fija y ventana) */
+.was { text-decoration: line-through; color: var(--muted); }
+.now { font: 600 26px/1 var(--display); color: var(--fg); font-variant-numeric: tabular-nums; }
+.pdf-now { font-weight: 800; color: var(--fg); }
+.off { font: 800 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: #140a0b; background: var(--gold); padding: 5px 8px; border-radius: 999px; }
+.timer { display: inline-flex; align-items: center; gap: 8px; color: var(--fg); }
+.timer::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--wine-glow); box-shadow: 0 0 0 0 rgba(176,40,63,.6); animation: pulse 1.6s infinite; }
+.timer strong { font: 800 15px/1 var(--body); color: var(--gold); font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+@keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(176,40,63,0); } 100% { box-shadow: 0 0 0 0 rgba(176,40,63,0); } }
+.expired .timer, .expired .was, .expired .off { display: none; }
+.gift { margin: 0; font-size: 14px; font-weight: 600; color: var(--fg); }
 
+/* Verificación de edad */
 .gate { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: var(--bg); padding: 24px; text-align: center; }
 .gate[hidden] { display: none; }
 .gate h2 { font: 600 34px/1.1 var(--display); margin: 0 0 12px; }
 .gate p { color: var(--muted); margin: 0 0 26px; }
 .gate .row { display: flex; gap: 16px; justify-content: center; align-items: center; }
 .gate a { color: var(--fg); }
+
+/* ================= Portada: la mesa a la luz de las velas =================
+   La viñeta del final de la escena se funde con el negro de las secciones de abajo. */
+.hero { position: relative; height: 100vh; height: 100svh; min-height: 520px; overflow: hidden;
+  background: radial-gradient(60% 55% at 50% 42%, #2a1426 0%, #12080d 55%, var(--bg) 100%); }
+canvas#gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
 .nogl { position: absolute; inset: 0; display: none; place-items: center; text-align: center; padding: 24px; color: var(--muted); }
 .nogl.on { display: grid; }
+.vignette { position: absolute; inset: 0; pointer-events: none; transition: opacity .6s ease;
+  background:
+    radial-gradient(70% 62% at 50% 44%, rgba(7,4,5,0) 38%, rgba(7,4,5,.55) 72%, rgba(7,4,5,.95) 100%),
+    linear-gradient(to bottom, rgba(7,4,5,0) 62%, var(--bg) 100%); }
+.veil { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
+.veil.on { pointer-events: auto; }
+/* La carta se dibuja en 3D; este bloque queda solo para lectores de pantalla */
+.card { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.stash { position: fixed; z-index: 30; left: 50%; transform: translateX(-50%); opacity: 0; pointer-events: none; transition: opacity .3s; }
+.stash.on { opacity: 1; pointer-events: auto; }
+.scroll { position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%); width: 1px; height: 18px; background: linear-gradient(var(--gold), transparent); opacity: .6; }
 
-/* ---------- Oferta en la portada ---------- */
+/* Barra superior: fija; al bajar se cierra en una píldora flotante que es el botón de compra */
+.bar { position: fixed; z-index: 40; top: 0; left: 50%; transform: translateX(-50%); width: 100%;
+  display: flex; justify-content: space-between; align-items: center; border-radius: 0; background-color: rgba(122, 22, 48, 0);
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
+  transition: width .6s var(--ease), top .6s var(--ease), padding .6s var(--ease),
+    border-radius .6s ease, background-color .4s ease, box-shadow .4s ease, opacity .4s ease; }
+.brand { font: 600 22px/1 var(--display); color: var(--fg); text-decoration: none; }
+.brand em { color: var(--wine-glow); }
+.links { display: flex; gap: 24px; align-items: center; font-size: 14px; transition: opacity .4s, gap .5s ease; }
+.links a:not(.btn) { color: var(--muted); text-decoration: none; }
+.links a:not(.btn):hover { color: var(--fg); }
+.bar .brand, .bar .links a:not(.btn) { display: inline-block; max-width: 260px; white-space: nowrap; overflow: hidden;
+  transition: opacity .25s ease, max-width .5s ease; }
+.bar .btn--sm { transition: background-color .4s ease, border-color .4s ease, padding .5s ease; }
+.pill-price { display: none; }
+.bar.pill { top: max(14px, env(safe-area-inset-top)); width: 240px; padding: 0; border-radius: 999px; background-color: var(--wine);
+  box-shadow: 0 14px 34px rgba(0,0,0,.55), inset 0 0 0 1px var(--wine-glow); justify-content: center; }
+.bar.pill:hover { background-color: var(--wine-glow); }
+.bar.pill .brand, .bar.pill .links a:not(.btn) { opacity: 0; max-width: 0; pointer-events: none; }
+.bar.pill .links { gap: 0; width: 100%; }
+.bar.pill .btn--sm { width: 100%; background-color: transparent; border-color: transparent; padding: 16px 0; font-size: 13px; text-align: center; }
+.bar.pill .pill-price { display: inline; margin-left: 8px; opacity: .85; }
+
+/* Título en neón dorado art déco: tubo fino, halo cálido y líneas a los costados */
+.intro { position: absolute; z-index: 5; left: 0; right: 0; top: max(76px, calc(env(safe-area-inset-top) + 60px)); text-align: center; padding: 0 16px; pointer-events: none; transition: opacity .4s; }
+.intro h1 { font: 400 clamp(34px, 5.6vw, 72px)/1 var(--neon); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 14px;
+  color: #ffe6b0; text-shadow: 0 0 2px #fff3d6, 0 0 8px rgba(227,180,101,.9), 0 0 22px rgba(227,180,101,.6), 0 0 48px rgba(200,120,40,.45);
+  display: flex; align-items: center; justify-content: center; gap: 18px; animation: neon-on 1.6s ease-out .3s both; }
+.intro h1::before, .intro h1::after { content: ""; flex: 0 1 90px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold)); box-shadow: 0 0 6px rgba(227,180,101,.8); }
+.intro h1::after { transform: scaleX(-1); }
+@keyframes neon-on { 0% { opacity: .08; } 12% { opacity: .9; } 16% { opacity: .2; } 26% { opacity: 1; } 32% { opacity: .45; } 40%, 100% { opacity: 1; } }
+.intro .lead { font: italic 600 clamp(22px, 2.4vw, 30px)/1.15 var(--display); color: var(--cream); margin: 0 auto 10px; max-width: 30ch; }
+.intro .lead b { font-weight: 600; color: #ff8a9c; text-shadow: 0 0 2px #ffd0d8, 0 0 10px rgba(176,40,63,.95), 0 0 26px rgba(176,40,63,.7); }
+.intro .facts { color: var(--gold); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 800; margin: 0; }
+
+/* Interfaz de abajo: pista, niveles y oferta */
+.ui { position: absolute; z-index: 5; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); pointer-events: none; }
+.ui > * { pointer-events: auto; }
+.ui.bottom { bottom: 0; padding-bottom: 28px; flex-direction: column; }
+.hint { font-size: 13px; color: var(--muted); margin: 0 0 10px; transition: opacity .4s; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; transition: opacity .4s; }
+.chip { font: 600 12px/1 var(--body); color: var(--muted); background: rgba(7,4,5,.5); border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; cursor: pointer; }
+.chip[aria-pressed="true"] { color: var(--fg); border-color: var(--gold); }
 .offer { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 14px; transition: opacity .4s; }
 .offer-line { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; justify-content: center; font-size: 14px; color: var(--muted); }
-.timer { display: inline-flex; align-items: center; gap: 8px; color: var(--fg); }
-.timer::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--wine-glow); box-shadow: 0 0 0 0 rgba(176,40,63,.6); animation: pulse 1.6s infinite; }
-.timer strong { font: 800 15px/1 var(--body); color: var(--gold); font-variant-numeric: tabular-nums; letter-spacing: .04em; }
-.expired .timer::before { display: none; }
-@keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(176,40,63,0); } 100% { box-shadow: 0 0 0 0 rgba(176,40,63,0); } }
-.was { text-decoration: line-through; color: var(--muted); }
-.now { font: 600 26px/1 var(--display); color: var(--fg); font-variant-numeric: tabular-nums; }
-.off { font: 800 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: #140a0b; background: var(--gold); padding: 5px 8px; border-radius: 999px; }
-.expired .was, .expired .off { display: none; }
-.playing .offer { opacity: 0; pointer-events: none; }
-@media (prefers-reduced-motion: reduce) { .timer::before { animation: none; } }
+.of-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.of-top .so-stock { white-space: nowrap; }
+.of-pdf { background: none; border: 0; padding: 4px 0 0; color: var(--muted); font: 400 13px/1.4 var(--body); cursor: pointer; text-align: center; }
+.of-pdf b, .of-pdf .pdf-now { color: var(--fg); }
 
-/* ---------- Secciones nuevas ---------- */
+/* Tarjeta de oferta: el mazo primero, el PDF como alternativa (al costado en escritorio) */
+.side-offer { display: none; }
+.side-offer p { margin: 0; }
+.so-tag { font: 800 11px/1 var(--body); letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
+.so-stock { font: 800 12px/1.2 var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--fg); }
+.so-price { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.so-price .now { font-size: 46px; color: var(--gold); }
+.so-note { font-size: 13px; color: var(--muted); }
+.side-offer > .btn { width: 100%; text-align: center; padding: 17px 20px; margin-top: 2px; }
+.so-pdf { margin-top: 8px; padding-top: 14px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
+.so-pdf .btn { justify-self: start; }
+.so-alt { font-size: 13px; color: var(--muted); }
+.so-pdf-line { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 14px; }
+.so-pdf-line .timer strong, .of-pdf .timer strong { font-size: 13px; }
+
+/* Mientras hay una carta levantada se esconde todo lo demás */
+.playing .vignette, .playing .bar, .playing .intro, .playing .hint, .playing .chips, .playing .links, .playing .offer, .playing .side-offer { opacity: 0; pointer-events: none; }
+
+/* ================= Secciones ================= */
+.wrap { max-width: 1040px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+section.block { padding-block: 72px; scroll-margin-top: 70px; }
+section.block + section.block { border-top: 1px solid var(--line); }
+.block h2 { font: 600 clamp(36px, 5vw, 56px)/1 var(--display); margin: 0 0 32px; }
+.block h2 em { color: var(--gold); }
+
+/* Qué trae */
 .trae { display: grid; grid-template-columns: 260px 1fr; gap: 48px; align-items: center; }
+.trae figure { margin: 0; }
 .trae img { width: 100%; height: auto; border-radius: 10px; box-shadow: 0 30px 60px rgba(0,0,0,.6); display: block; }
+.trae figcaption { font-size: 12px; color: var(--muted); margin-top: 10px; text-align: center; }
 .trae ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
 .trae li { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; font-size: 17px; }
 .trae li b { font: italic 600 30px/1 var(--display); color: var(--gold); }
 .trae li span { padding-top: 4px; }
 
+/* Niveles con cartas de muestra */
 .niveles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .nivel h3 { font: 600 26px/1.1 var(--display); margin: 0 0 6px; }
 .nivel p { margin: 0 0 18px; color: var(--muted); font-size: 15px; }
@@ -177,20 +175,40 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; font-size:
 .muestra span { font-size: 11px; color: #6d5a5a; }
 .nota { margin: 28px 0 0; color: var(--muted); font-size: 15px; }
 
+/* Cómo se juega */
 .como ol { margin: 0; padding-left: 1.2em; max-width: 60ch; font-size: 17px; }
 .como li { margin-bottom: 14px; }
 .como li::marker { color: var(--gold); font-weight: 800; }
 
+/* Versiones: al pasar el mouse la caja se rellena de bordó y sube */
 .versiones { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.product { border: 1px solid var(--line); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 12px; background: var(--bg-2);
+  transition: transform .25s ease, background-color .25s ease, border-color .25s ease; }
+.product--featured { border-color: var(--wine-glow); }
+.product .tag { font: 800 11px/1 var(--body); letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+.product h3 { font: 600 30px/1.05 var(--display); margin: 0; }
+.product p { margin: 0; color: var(--muted); font-size: 15px; flex: 1; }
+.product p.upsell { color: var(--fg); font-size: 14px; }
+.upsell:empty { display: none; }
+.product .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+.product .btn { padding: 12px 18px; font-size: 12px; }
+.product .tag, .product p, .price, .product .btn { transition: color .25s ease, background-color .25s ease, border-color .25s ease; }
+.price { font: 600 28px/1 var(--display); color: var(--gold); font-variant-numeric: tabular-nums; }
 .version { display: grid; grid-template-columns: 120px 1fr; gap: 20px; align-items: start; }
 .version img { width: 100%; height: auto; border-radius: 6px; box-shadow: 0 14px 30px rgba(0,0,0,.5); display: block; }
 .version .info { display: flex; flex-direction: column; gap: 10px; height: 100%; }
 .version .price-line { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.version .gift { font-size: 14px; }
 .version .stock { font: 800 12px/1 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--gold); transition: color .25s ease; }
+.product:hover, .product:focus-within { transform: translateY(-6px); background: var(--wine); border-color: var(--wine); }
+.product:hover .tag, .product:hover p, .product:focus-within .tag, .product:focus-within p { color: rgba(243,233,226,.85); }
+.product:hover p.upsell, .product:focus-within p.upsell, .product:hover .price, .product:focus-within .price,
 .product:hover .stock, .product:focus-within .stock { color: var(--fg); }
 .product:hover .was, .product:focus-within .was { color: rgba(243,233,226,.7); }
 .product:hover .off, .product:focus-within .off { background: var(--fg); color: var(--wine); }
+.product:hover .btn, .product:focus-within .btn { background: var(--fg); color: var(--wine); border-color: var(--fg); }
 
+/* Preguntas frecuentes y pie */
 .faq { max-width: 760px; }
 .faq details { border-bottom: 1px solid var(--line); padding: 18px 0; }
 .faq summary { cursor: pointer; font: 600 22px/1.25 var(--display); list-style: none; display: flex; justify-content: space-between; gap: 16px; }
@@ -199,31 +217,20 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; font-size:
 .faq details[open] summary::after { transform: rotate(45deg); }
 .faq details p { margin: 10px 0 0; color: var(--muted); }
 .faq a, footer a { color: var(--fg); }
+footer { border-top: 1px solid var(--line); padding-block: 28px 40px; font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 footer .contact { display: flex; gap: 18px; flex-wrap: wrap; }
 
-@media (max-width: 760px) {
-  .trae { grid-template-columns: 1fr; gap: 28px; }
-  .trae img { max-width: 200px; }
-  .niveles { grid-template-columns: 1fr; gap: 40px; }
-  .muestra { max-width: 210px; padding: 18px 16px; }
-  .muestra q { font-size: 19px; }
-  .versiones { grid-template-columns: 1fr; }
-}
-@media (max-width: 420px) {
-  .version { grid-template-columns: 92px 1fr; gap: 14px; }
-  .product h3 { font-size: 26px; }
-}
-
-/* ---------- Ventana de complementos ---------- */
+/* ================= Ventana de complementos ================= */
 .addons { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 16px; background: rgba(7,4,5,.72);
   -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); opacity: 0; transition: opacity .25s ease; }
 .addons[hidden] { display: none; }
 .addons.on { opacity: 1; }
 .sheet { position: relative; width: min(560px, 100%); max-height: calc(100svh - 32px); overflow: auto; background: var(--bg-2);
-  border: 1px solid var(--line); border-radius: 16px; padding: 28px 24px 22px; transform: translateY(14px); transition: transform .3s cubic-bezier(.2,.7,.2,1); }
+  border: 1px solid var(--line); border-radius: 16px; padding: 28px 24px 22px; transform: translateY(14px); transition: transform .3s var(--ease); }
 .addons.on .sheet { transform: none; }
 .sheet h2 { font: 600 32px/1.05 var(--display); margin: 0 36px 8px 0; }
 .sheet > p { margin: 0 0 18px; color: var(--muted); font-size: 14px; }
+.sheet .timer { font-size: 13px; margin-bottom: 14px; }
 .close { position: absolute; top: 14px; right: 14px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line);
   background: transparent; color: var(--fg); font-size: 20px; line-height: 1; cursor: pointer; }
 .addon-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
@@ -245,7 +252,81 @@ footer .contact { display: flex; gap: 18px; flex-wrap: wrap; }
 .acciones { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
 .acciones .btn { flex: 1; text-align: center; }
 .acciones .skip { background: none; border: 0; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font: inherit; font-size: 14px; }
-.sheet .timer { font-size: 13px; margin-bottom: 14px; }
+
+/* ================= Barra de compra fija (celular y tablet) ================= */
+.buybar { position: fixed; z-index: 45; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px max(16px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  background: rgba(18,10,12,.94); border-top: 1px solid var(--line); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  transform: translateY(110%); visibility: hidden; transition: transform .35s var(--ease), visibility 0s linear .35s; }
+.buybar.on { transform: none; visibility: visible; transition: transform .35s var(--ease); }
+body.modal-open .buybar, .playing .buybar { transform: translateY(110%); visibility: hidden; }
+.bb-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.bb-price { display: flex; gap: 8px; align-items: baseline; }
+.bb-price .was { font-size: 13px; }
+.bb-price .now { font-size: 28px; color: var(--gold); }
+.bb-stock { font: 800 11px/1 var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.buybar .btn { padding: 16px 28px; flex-shrink: 0; }
+
+/* ================= Animaciones =================
+   Portada: el neón se prende y después suben la frase, los datos y la oferta.
+   Mientras se ve la verificación de edad quedan en pausa (body.held), para que no se pierdan detrás.
+   Al bajar: los títulos suben palabra por palabra desde abajo, el resto aparece subiendo
+   y las cartas de muestra entran como si las repartieran. Todo vuelve a su estado normal al terminar. */
+@keyframes rise { from { opacity: 0; translate: 0 18px; } }
+.intro .lead { animation: rise 1s var(--ease) 1s backwards; }
+.intro .facts { animation: rise 1s var(--ease) 1.2s backwards; }
+.side-offer, .ui.bottom .offer { animation: rise 1.1s var(--ease) 1.4s backwards; }
+.held .intro h1, .held .intro .lead, .held .intro .facts, .held .side-offer, .held .ui.bottom .offer { animation-play-state: paused; }
+
+.rv [data-r] { opacity: 0; translate: 0 28px; transition: opacity .9s var(--ease), translate .9s var(--ease); transition-delay: var(--d, 0s); }
+.rv .muestra[data-r] { translate: 0 90px; rotate: -8deg; scale: .9;
+  transition: opacity .7s ease, translate 1.1s var(--ease), rotate 1.1s var(--ease), scale 1.1s var(--ease); transition-delay: var(--d, 0s); }
+.rv .nivel:nth-child(2) .muestra[data-r] { rotate: 6deg; }
+.rv .nivel:nth-child(3) .muestra[data-r] { rotate: -4deg; }
+.rv [data-r].in { opacity: 1; translate: none; rotate: none; scale: none; }
+.w { display: inline-block; overflow: hidden; vertical-align: top; padding: 0 .06em .14em; margin: 0 -.06em -.14em; }
+.w span { display: inline-block; }
+.rv .split:not(.in) .w span { translate: 0 110%; }
+.rv .split .w span { transition: translate 1s var(--ease) calc(var(--i) * 70ms); }
+
+/* ================= Tamaños de pantalla ================= */
+/* Escritorio: oferta al costado de la mesa, sin barra fija */
+@media (min-width: 1024px) and (min-height: 600px) {
+  .side-offer { display: flex; flex-direction: column; gap: 10px; position: absolute; z-index: 5; left: max(40px, 3.5vw); top: 50%; transform: translateY(-40%);
+    width: 300px; padding: 24px 24px 22px; border-radius: 16px; background: rgba(18,10,12,.6); border: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: 0 30px 60px rgba(0,0,0,.45); transition: opacity .4s; }
+  .ui.bottom .offer { display: none; }
+  .buybar { display: none; }
+}
+@media (max-height: 700px) and (min-width: 641px) { .intro .lead { font-size: 22px; } .intro h1 { font-size: 48px; } }
+/* Celular y tablet: oferta en tarjeta debajo del mazo y barra fija en lugar de la píldora */
+@media (max-width: 1023px), (max-height: 599px) {
+  .ui.bottom .offer { width: min(100%, 420px); padding: 14px 16px 12px; border-radius: 14px; background: rgba(18,10,12,.66); border: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); align-items: stretch; gap: 8px; }
+  .ui.bottom .offer-line { justify-content: flex-start; gap: 10px; }
+  .ui.bottom .offer .now { font-size: 34px; color: var(--gold); }
+  .ui.bottom .offer .gift { font-size: 13px; color: var(--muted); font-weight: 400; }
+  .ui.bottom .offer > .btn { width: 100%; text-align: center; padding-block: 16px; }
+  .bar.pill { opacity: 0; pointer-events: none; }
+  footer { padding-bottom: calc(110px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 760px) {
+  .trae { grid-template-columns: 1fr; gap: 28px; }
+  .trae img { max-width: 200px; }
+  .niveles { grid-template-columns: 1fr; gap: 40px; }
+  .muestra { max-width: 210px; padding: 18px 16px; }
+  .muestra q { font-size: 19px; }
+  .versiones { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .bar .links a:not(.btn), .ui.bottom .hint { display: none; }
+  .intro { top: max(68px, calc(env(safe-area-inset-top) + 56px)); }
+  .intro .lead { font-size: 21px; }
+  .intro h1 { gap: 10px; letter-spacing: .04em; }
+  .intro h1::before, .intro h1::after { flex-basis: 28px; }
+  .intro .facts { font-size: 10px; }
+  .ui.bottom { padding-bottom: 20px; }
+}
 @media (max-width: 520px) {
   .addons { align-items: end; padding: 0; }
   .sheet { border-radius: 16px 16px 0 0; max-height: 92svh; padding: 24px 16px calc(18px + env(safe-area-inset-bottom)); }
@@ -259,83 +340,24 @@ footer .contact { display: flex; gap: 18px; flex-wrap: wrap; }
   .acciones { flex-direction: column; align-items: stretch; position: sticky; bottom: calc(-18px - env(safe-area-inset-bottom)); background: var(--bg-2);
     margin: 0 -16px calc(-18px - env(safe-area-inset-bottom)); padding: 12px 16px calc(14px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
 }
-body.modal-open { overflow: hidden; }
-
-/* ---------- Tarjeta de oferta: el mazo primero, el PDF como alternativa ---------- */
-.side-offer { display: none; }
-.side-offer p { margin: 0; }
-.so-tag { font: 800 11px/1 var(--body); letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
-.so-stock { font: 800 12px/1.2 var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--fg); }
-.so-price { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.so-price .now { font-size: 46px; color: var(--gold); }
-.so-note { font-size: 13px; color: var(--muted); }
-.gift { margin: 0; font-size: 14px; font-weight: 600; color: var(--fg); }
-.side-offer > .btn { width: 100%; text-align: center; padding: 17px 20px; margin-top: 2px; }
-.so-pdf { margin-top: 8px; padding-top: 14px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
-.so-alt { font-size: 13px; color: var(--muted); }
-.so-pdf-line { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 14px; }
-.pdf-now { font-weight: 800; color: var(--fg); }
-.so-pdf-line .timer strong, .of-pdf .timer strong { font-size: 13px; }
-.so-pdf .btn { justify-self: start; }
-.expired .timer { display: none; }
-.playing .side-offer { opacity: 0; pointer-events: none; }
-@media (min-width: 1024px) and (min-height: 600px) {
-  .side-offer { display: flex; flex-direction: column; gap: 10px; position: absolute; z-index: 5; left: max(40px, 3.5vw); top: 50%; transform: translateY(-40%);
-    width: 300px; padding: 24px 24px 22px; border-radius: 16px; background: rgba(18,10,12,.6); border: 1px solid var(--line);
-    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: 0 30px 60px rgba(0,0,0,.45); transition: opacity .4s; }
-  .ui.bottom .offer { display: none; }
+@media (max-width: 420px) {
+  .version { grid-template-columns: 92px 1fr; gap: 14px; }
+  .product h3 { font-size: 26px; }
 }
-
-/* ---------- Tarjeta de la portada en celular y tablet ---------- */
-.of-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.of-pdf { background: none; border: 0; padding: 4px 0 0; color: var(--muted); font: 400 13px/1.4 var(--body); cursor: pointer; text-align: center; }
-.of-pdf b, .of-pdf .pdf-now { color: var(--fg); }
-@media (max-width: 1023px), (max-height: 599px) {
-  .ui.bottom .offer { width: min(100%, 420px); padding: 14px 16px 12px; border-radius: 14px; background: rgba(18,10,12,.66); border: 1px solid var(--line);
-    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); align-items: stretch; gap: 8px; }
-  .ui.bottom .offer-line { justify-content: flex-start; gap: 10px; }
-  .ui.bottom .offer .now { font-size: 34px; color: var(--gold); }
-  .ui.bottom .offer .gift { font-size: 13px; color: var(--muted); font-weight: 400; }
-  .ui.bottom .offer > .btn { width: 100%; text-align: center; padding-block: 16px; }
-}
-@media (max-width: 640px) { .ui.bottom .hint { display: none; } }
-.of-top .so-stock { white-space: nowrap; }
 @media (max-width: 380px) {
   .of-top .so-tag { letter-spacing: .1em; }
   .of-top .so-stock { font-size: 11px; letter-spacing: .02em; }
   .of-pdf .timer, .of-pdf [aria-hidden] { display: none; }
 }
 
-/* ---------- Otras piezas del mazo ---------- */
-.trae figure { margin: 0; }
-.trae figcaption { font-size: 12px; color: var(--muted); margin-top: 10px; text-align: center; }
-.version .gift { font-size: 14px; }
-.product:hover .gift, .product:focus-within .gift { color: var(--fg); }
-.upsell { color: var(--fg) !important; font-size: 14px !important; }
-.upsell:empty { display: none; }
-.btn[aria-disabled="true"] { opacity: .5; pointer-events: none; }
-
-/* ---------- Precio en la píldora y barra de compra fija ---------- */
-.pill-price { display: none; }
-.bar.pill .pill-price { display: inline; margin-left: 8px; opacity: .85; }
-.buybar { position: fixed; z-index: 45; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 12px max(16px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
-  background: rgba(18,10,12,.94); border-top: 1px solid var(--line); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-  transform: translateY(110%); visibility: hidden; transition: transform .35s cubic-bezier(.2,.7,.2,1), visibility 0s linear .35s; }
-.buybar.on { transform: none; visibility: visible; transition: transform .35s cubic-bezier(.2,.7,.2,1); }
-body.modal-open .buybar, .playing .buybar { transform: translateY(110%); visibility: hidden; }
-.bb-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.bb-price { display: flex; gap: 8px; align-items: baseline; }
-.bb-price .was { font-size: 13px; }
-.bb-price .now { font-size: 28px; color: var(--gold); }
-.bb-stock { font: 800 11px/1 var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.buybar .btn { padding: 16px 28px; flex-shrink: 0; }
-@media (min-width: 1024px) and (min-height: 600px) { .buybar { display: none; } }
-@media (max-width: 1023px), (max-height: 599px) {
-  .bar.pill { opacity: 0; pointer-events: none; }
-  footer { padding-bottom: calc(110px + env(safe-area-inset-bottom)); }
+/* ================= Movimiento reducido ================= */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .bar, .bar * { transition: none !important; }
+  .intro h1, .intro .lead, .intro .facts, .side-offer, .ui.bottom .offer, .timer::before { animation: none; }
+  .product:hover, .product:focus-within { transform: none; }
+  .buybar, .buybar.on { transition: none; }
 }
-@media (prefers-reduced-motion: reduce) { .buybar, .buybar.on { transition: none; } }
 </style>
 
 <div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
@@ -427,7 +449,7 @@ body.modal-open .buybar, .playing .buybar { transform: translateY(110%); visibil
   </section>
 
   <section class="block" id="niveles" aria-labelledby="niveles-title">
-    <h2 id="niveles-title">De una charla a una noche entera</h2>
+    <h2 id="niveles-title">Arranca con una pregunta. <em>Termina sin ropa.</em></h2>
     <div class="niveles">
       <div class="nivel">
         <h3>1 · Suave</h3>
@@ -582,10 +604,56 @@ var CONFIG = {
   /* ---------- Gate +18 ---------- */
   var gate = $('#gate');
   try { if (sessionStorage.getItem('vod-18') === '1') gate.hidden = true; } catch (e) {}
+  document.body.classList.toggle('held', !gate.hidden);
   $('#gate-yes').addEventListener('click', function () {
     try { sessionStorage.setItem('vod-18', '1'); } catch (e) {}
     gate.hidden = true;
+    document.body.classList.remove('held');
   });
+
+  /* ---------- Animaciones al bajar ---------- */
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    document.documentElement.classList.add('rv');
+    /* Títulos: cada palabra sube desde abajo, una detrás de otra */
+    $$('.block h2').forEach(function (h) {
+      h.setAttribute('aria-label', h.textContent);
+      [h].concat($$(':scope > *', h)).forEach(function (padre) {
+        Array.prototype.slice.call(padre.childNodes).forEach(function (n) {
+          if (n.nodeType !== 3) return;
+          var frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach(function (w) {
+            if (!w) return;
+            if (/^\s+$/.test(w)) { frag.appendChild(document.createTextNode(' ')); return; }
+            var o = document.createElement('span'), t = document.createElement('span');
+            o.className = 'w'; o.setAttribute('aria-hidden', 'true');
+            t.textContent = w; o.appendChild(t);
+            frag.appendChild(o);
+          });
+          padre.replaceChild(frag, n);
+        });
+      });
+      $$('.w span', h).forEach(function (t, i) { t.style.setProperty('--i', i); });
+      h.classList.add('split');
+    });
+    /* El resto: lo que entra junto en pantalla aparece escalonado */
+    var piezas = $$('.trae figure, .trae li, .nivel h3, .nivel p, .muestra, .nota, .como li, .version, .faq details');
+    piezas.forEach(function (el) { el.setAttribute('data-r', ''); });
+    var obs = new IntersectionObserver(function (entries) {
+      var n = 0;
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var el = e.target;
+        obs.unobserve(el);
+        el.classList.add('in');
+        if (el.classList.contains('split')) return;
+        var d = n++ * .09;
+        el.style.setProperty('--d', d + 's');
+        /* Al terminar se le sacan las marcas para que vuelvan sus transiciones propias (hover de las versiones) */
+        setTimeout(function () { el.removeAttribute('data-r'); el.classList.remove('in'); el.style.removeProperty('--d'); }, (d + 1.2) * 1000);
+      });
+    }, { rootMargin: '0px 0px -12% 0px' });
+    $$('.split').concat(piezas).forEach(function (el) { obs.observe(el); });
+  }
 
   /* ---------- Barra que se vuelve píldora y barra de compra fija (celular) ---------- */
   var bar = $('#bar'), buybar = $('#buybar'), hero = $('#hero');
@@ -594,6 +662,14 @@ var CONFIG = {
     buybar.classList.toggle('on', window.scrollY > hero.offsetHeight * .7);
   }
   addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+  /* ---------- Mazo físico: precio y stock real. Al llegar a 0 se deja de vender ---------- */
+  var M = CONFIG.mazo, hayMazo = M.stock > 0;
+  $$('[data-mazo-was]').forEach(function (el) { el.textContent = M.tachado ? fmt(M.tachado) : ''; });
+  $$('[data-mazo-now]').forEach(function (el) { el.textContent = fmt(M.precio); });
+  $$('[data-mazo-off]').forEach(function (el) { el.textContent = M.tachado ? Math.round((1 - M.precio / M.tachado) * 100) + ' % off' : ''; });
+  $$('[data-stock]').forEach(function (el) { el.textContent = hayMazo ? 'Quedan ' + M.stock + ' de ' + M.total : 'Agotado'; });
+  if (!hayMazo) $$('[data-buy="mazo"]').forEach(function (b) { b.textContent = 'Agotado'; b.setAttribute('aria-disabled', 'true'); b.disabled = true; });
 
   /* ---------- Contador: 15 minutos por visitante; al llegar a cero vuelve el precio normal ---------- */
   var KEY = 'vod-oferta-fin', fin;
@@ -624,14 +700,6 @@ var CONFIG = {
     if (activa()) $$('[data-timer]').forEach(function (el) { el.textContent = txt; });
     if (estaba !== activa()) { estaba = activa(); pintarPrecios(); pintarUpsell(); resumen(); }
   }
-
-  /* ---------- Mazo físico: precio y stock real. Al llegar a 0 se deja de vender ---------- */
-  var M = CONFIG.mazo, hayMazo = M.stock > 0;
-  $$('[data-mazo-was]').forEach(function (el) { el.textContent = M.tachado ? fmt(M.tachado) : ''; });
-  $$('[data-mazo-now]').forEach(function (el) { el.textContent = fmt(M.precio); });
-  $$('[data-mazo-off]').forEach(function (el) { el.textContent = M.tachado ? Math.round((1 - M.precio / M.tachado) * 100) + ' % off' : ''; });
-  $$('[data-stock]').forEach(function (el) { el.textContent = hayMazo ? 'Quedan ' + M.stock + ' de ' + M.total : 'Agotado'; });
-  if (!hayMazo) $$('[data-buy="mazo"]').forEach(function (b) { b.textContent = 'Agotado'; b.setAttribute('aria-disabled', 'true'); b.disabled = true; });
 
   pintarPrecios(); pintarUpsell(); tick(); setInterval(tick, 1000);
 
@@ -667,25 +735,30 @@ var CONFIG = {
     if (conExtras) Object.keys(elegidos).forEach(function (v) { items.push(v + ':1'); });
     return '/cart/' + items.join(',') + (base === 'pdf' && activa() ? '?discount=' + encodeURIComponent(CONFIG.codigo) : '');
   }
+  function fila(nombre, precio, clase) {
+    var d = document.createElement('div'), a = document.createElement('span'), b = document.createElement('span');
+    if (clase) d.className = clase;
+    a.textContent = nombre; b.textContent = precio;
+    d.append(a, b);
+    return d;
+  }
   function resumen() {
-    var filas = '', total;
+    var filas = [], total;
     if (base === 'mazo') {
       total = M.precio;
-      filas += '<div><span>Mazo físico · Preventa</span><span>' + fmt(M.precio) + '</span></div>';
-      filas += '<div><span>PDF de regalo</span><span>Gratis</span></div>';
+      filas.push(fila('Mazo físico · Preventa', fmt(M.precio)), fila('PDF de regalo', 'Gratis'));
     } else {
       total = activa() ? oferta : CONFIG.pdf.precio;
-      filas += '<div><span>Verdad o Deseo · PDF</span><span>' + fmt(total) + '</span></div>';
+      filas.push(fila('Verdad o Deseo · PDF', fmt(total)));
     }
-    var fijas = base === 'mazo' ? 2 : 1;
     Object.keys(elegidos).forEach(function (v) {
-      var x = elegidos[v]; total += x.precio;
-      filas += '<div><span></span><span>' + fmt(x.precio) + '</span></div>';
+      var x = elegidos[v];
+      total += x.precio;
+      filas.push(fila(x.nombre, fmt(x.precio)));
     });
-    filas += '<div class="total"><span>Total</span><span>' + fmt(total) + '</span></div>';
-    var r = $('#resumen'); r.innerHTML = filas;
-    var nombres = Object.keys(elegidos).map(function (v) { return elegidos[v].nombre; });
-    $$('div', r).slice(fijas, fijas + nombres.length).forEach(function (d, i) { d.firstChild.textContent = nombres[i]; });
+    filas.push(fila('Total', fmt(total), 'total'));
+    var r = $('#resumen');
+    r.replaceChildren.apply(r, filas);
     $('#pay').href = link(true);
   }
   function abrir(e) {
