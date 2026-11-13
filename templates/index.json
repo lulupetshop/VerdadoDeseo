@@ -4,6 +4,7 @@
     "main": {
       "type": "landing-verdad-o-deseo",
       "settings": {
+        "titular": "Cartas +18 para prender la noche",
         "minutos": 15,
         "codigo": "NOCHE50",
         "descuento": 50
