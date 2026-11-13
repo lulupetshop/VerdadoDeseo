@@ -790,34 +790,14 @@ var CONFIG = {
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js';
 
 /* ================= Cartas ================= */
+/* Solo 6 cartas de muestra (2 por nivel) para no mostrar el juego entero */
 const CARDS = [
-  { l: 1, k: 'V', t: '¿Qué fue lo primero que te gustó de mi cuerpo?' },
   { l: 1, k: 'V', t: '¿Qué ropa mía te calienta más?' },
-  { l: 1, k: 'V', t: '¿Qué fantasía te dio vergüenza contarme alguna vez?' },
-  { l: 1, k: 'V', t: '¿Dónde te gustaría que te bese y nunca te animaste a pedirlo?' },
-  { l: 1, k: 'D', t: 'Besale el cuello un minuto sin usar las manos.' },
-  { l: 1, k: 'D', t: 'Sacate una prenda. La elige tu pareja.' },
   { l: 1, k: 'D', t: 'Susurrale al oído qué le harías esta noche.' },
-  { l: 1, k: 'D', t: 'Sentate encima de tu pareja y besala hasta que diga basta.' },
-  { l: 2, k: 'V', t: '¿Cuál fue la mejor vez que {cogimos} y qué la hizo tan buena?' },
-  { l: 2, k: 'V', t: '¿Te hiciste una {paja} pensando en mí? Contá cómo fue.' },
   { l: 2, k: 'V', t: '¿Qué posición querés probar que nunca hicimos?' },
-  { l: 2, k: 'V', t: '¿Qué parte de mi cuerpo te gustaría tener en la boca ahora?' },
-  { l: 2, k: 'D', t: 'Vendale los ojos y hacele adivinar qué le das a probar.' },
   { l: 2, k: 'D', t: 'Sacale la ropa interior con los dientes.' },
-  { l: 2, k: 'D', t: 'Pasale la lengua desde el ombligo hasta donde te deje.' },
-  { l: 2, k: 'D', t: 'Tocalo/a entre las piernas por encima de la ropa durante un minuto.' },
-  { l: 2, k: 'D', t: 'Masajeale el {culo} con aceite durante dos minutos.' },
-  { l: 3, k: 'D', t: '{Chupale} la {pija} sin usar las manos hasta que te pida que pares.' },
-  { l: 3, k: 'D', t: '{Chupale} la {concha} hasta que {acabe}.' },
-  { l: 3, k: 'D', t: '{Cogé} en la posición que elija tu pareja, sin cambiar hasta {acabar}.' },
-  { l: 3, k: 'D', t: '{Tocate} delante de tu pareja, mirándola a los ojos, hasta {acabar}.' },
-  { l: 3, k: 'D', t: 'Hagan un {69} durante tres minutos. Pierde quien pare primero.' },
-  { l: 3, k: 'D', t: '{Acabá} donde tu pareja te diga.' },
-  { l: 3, k: 'D', t: 'Atale las manos y hacé con su cuerpo lo que quieras durante cinco minutos.' },
   { l: 3, k: 'V', t: '¿Qué es lo más sucio que querés que te haga y nunca me pediste?' },
-  { l: 3, k: 'V', t: '¿Probarías por el {culo}? ¿Dando o recibiendo?' },
-  { l: 3, k: 'V', t: '¿Cómo te gusta que te {chupe}? Explicalo con detalle.' }
+  { l: 3, k: 'D', t: '{Acabá} donde tu pareja te diga.' }
 ];
 const NAMES = { 1: 'Suave', 2: 'Intenso', 3: 'Explícito' };
 const FOOT = { V: 'Responde quien sacó la carta.', D: 'Se cumple o se negocia. Siempre se puede pasar.' };
